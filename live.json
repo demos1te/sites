@@ -1,0 +1,643 @@
+{
+ "shop": {
+  "name": "Цвето Джуси"
+ },
+ "demo": false,
+ "contacts": {
+  "phone": "+7 (919) 103-92-45",
+  "phoneRaw": "+79191039245",
+  "telegram": "Cveto_Juicy",
+  "socials": [
+   {
+    "label": "Яндекс Карты",
+    "url": "https://yandex.ru/maps/org/tsveto_dzhusi/190075383487"
+   },
+   {
+    "label": "Telegram-канал",
+    "url": "https://t.me/cvetojuicy"
+   }
+  ]
+ },
+ "orders": {
+  "channels": [],
+  "greeting": "Здравствуйте! Хочу заказать букет с сайта «Цвето Джуси».",
+  "staff": "флорист"
+ },
+ "delivery": {
+  "enabled": true,
+  "pickup": true,
+  "summary": "Самовывоз из студии в Щербинке и доставка по Москве. Время и стоимость доставки уточнит флорист.",
+  "zones": [],
+  "payment": [
+   "наличными",
+   "картой",
+   "переводом"
+  ],
+  "notes": [],
+  "ahead": "Оформите заявку на сайте или соберите букет в конструкторе."
+ },
+ "builder": {
+  "title": "Соберите свой букет",
+  "lead": "Выберите цветы и оттенки, затем оформите заявку на сайте.",
+  "minStems": 3,
+  "maxStemsPerFlower": 101,
+  "defaultWrapping": "designer",
+  "defaultRibbon": "twine",
+  "assemblyFee": 0,
+  "quoteOnly": false
+ },
+ "flowers": [
+  {
+   "id": "rose",
+   "name": "Роза",
+   "plural": "Розы",
+   "price": 350,
+   "photo": "img/rose-c67a46-960.webp",
+   "shades": [
+    {
+     "name": "Красная",
+     "hex": "#b2283a"
+    },
+    {
+     "name": "Пыльно-розовая",
+     "hex": "#e3a6a8"
+    },
+    {
+     "name": "Белая",
+     "hex": "#f4efe6"
+    },
+    {
+     "name": "Кремовая",
+     "hex": "#efdcb8"
+    }
+   ]
+  },
+  {
+   "id": "peony-rose",
+   "name": "Французская роза",
+   "plural": "Пионовидные розы",
+   "price": 450,
+   "photo": "img/peony-rose-2fd65b-960.webp",
+   "shades": [
+    {
+     "name": "Кремовая",
+     "hex": "#f1e2c9"
+    },
+    {
+     "name": "Персиковая",
+     "hex": "#efc3a4"
+    },
+    {
+     "name": "Розовая",
+     "hex": "#e8aab5"
+    }
+   ]
+  },
+  {
+   "id": "spray-rose",
+   "name": "Кустовая роза",
+   "plural": "Кустовые розы",
+   "price": 380,
+   "photo": "img/spray-rose-4e19d2-960.webp",
+   "shades": [
+    {
+     "name": "Кремовая",
+     "hex": "#f0e1c2"
+    },
+    {
+     "name": "Розовая",
+     "hex": "#e5a3b0"
+    },
+    {
+     "name": "Малиновая",
+     "hex": "#b8456a"
+    }
+   ]
+  },
+  {
+   "id": "chrysanthemum",
+   "name": "Хризантема",
+   "plural": "Хризантемы",
+   "price": 250,
+   "photo": "img/chrysanthemum-791d1a-960.webp",
+   "shades": [
+    {
+     "name": "Белая",
+     "hex": "#f5f2e8"
+    },
+    {
+     "name": "Сиреневая",
+     "hex": "#c9a8d6"
+    },
+    {
+     "name": "Жёлтая",
+     "hex": "#ecd36a"
+    }
+   ]
+  },
+  {
+   "id": "hydrangea",
+   "name": "Гортензия",
+   "plural": "Гортензии",
+   "price": 650,
+   "photo": "img/hydrangea-d92e4a-960.webp",
+   "shades": [
+    {
+     "name": "Розовая",
+     "hex": "#e5a9bb"
+    },
+    {
+     "name": "Белая",
+     "hex": "#f1efe6"
+    },
+    {
+     "name": "Голубая",
+     "hex": "#a9bfdc"
+    }
+   ]
+  },
+  {
+   "id": "carnation",
+   "name": "Гвоздика",
+   "plural": "Гвоздики",
+   "price": 180,
+   "photo": "img/carnation-d503ad-960.webp",
+   "shades": [
+    {
+     "name": "Розовая",
+     "hex": "#e597b1"
+    },
+    {
+     "name": "Малиновая",
+     "hex": "#b8406e"
+    },
+    {
+     "name": "Белая",
+     "hex": "#f5f1e8"
+    }
+   ]
+  }
+ ],
+ "greens": [],
+ "wrapping": [
+  {
+   "id": "designer",
+   "name": "Дизайнерская плёнка",
+   "note": "Матовая, в цвет букета",
+   "price": null,
+   "kind": "wrap",
+   "color": "#efd9d3",
+   "color2": "#f8efe9",
+   "priceOver": null
+  },
+  {
+   "id": "tissue",
+   "name": "Дизайнерская упаковка (тишью и плёнка)",
+   "price": null,
+   "kind": "wrap",
+   "color": "#f3e3e0",
+   "color2": "#fbf4f2",
+   "priceOver": null
+  },
+  {
+   "id": "none",
+   "name": "Без упаковки",
+   "price": 0,
+   "kind": "none",
+   "color": "",
+   "color2": "#f1ebe7",
+   "priceOver": null
+  },
+  {
+   "id": "kraft",
+   "name": "Крафт",
+   "note": "Тёплый, природный",
+   "price": null,
+   "kind": "wrap",
+   "color": "#c9a37a",
+   "color2": "#dcbf9a",
+   "priceOver": null
+  },
+  {
+   "id": "bag",
+   "name": "Сумочка",
+   "note": "Удобно нести и дарить",
+   "price": null,
+   "kind": "bag",
+   "color": "#e9d8c8",
+   "color2": "#f4ebe1",
+   "priceOver": null
+  },
+  {
+   "id": "box",
+   "name": "Шляпная коробка",
+   "note": "Цветы в увлажнённой губке",
+   "price": null,
+   "kind": "box",
+   "color": "#e8c6c4",
+   "color2": "#f2dcda",
+   "priceOver": null
+  },
+  {
+   "id": "basket",
+   "name": "Корзина",
+   "note": "Для больших композиций",
+   "price": null,
+   "kind": "basket",
+   "color": "#b48a5e",
+   "color2": "#c9a174",
+   "priceOver": null
+  }
+ ],
+ "ribbons": [
+  {
+   "id": "twine",
+   "name": "Без ленты (бечёвка)",
+   "price": 0,
+   "color": "#c9b28f"
+  },
+  {
+   "id": "ribbon",
+   "name": "Лента",
+   "price": 0,
+   "color": "#e8c4bd"
+  },
+  {
+   "id": "double",
+   "name": "Двойная лента",
+   "price": 0,
+   "color": "#d9a49b"
+  }
+ ],
+ "extras": [],
+ "catalog": [
+  {
+   "id": "juicy-1325",
+   "name": "Розы и гермини",
+   "price": 4300
+  },
+  {
+   "id": "juicy-1319",
+   "name": "Ранункулюсы и розы",
+   "price": 5500
+  },
+  {
+   "id": "juicy-1310",
+   "name": "Гортензия и диантус",
+   "price": 2350
+  },
+  {
+   "id": "juicy-1313",
+   "name": "Розы и илекс",
+   "price": 5400
+  },
+  {
+   "id": "juicy-1316",
+   "name": "Розы и ранункулюсы",
+   "price": 15100
+  },
+  {
+   "id": "juicy-1322",
+   "name": "Розы и хризантема",
+   "price": 2150
+  },
+  {
+   "id": "juicy-1307",
+   "name": "Кустовая роза и эвкалипт",
+   "price": 3700
+  }
+ ],
+ "live": true,
+ "noFlorist": false,
+ "showcase": [
+  {
+   "id": "juicy-1325",
+   "name": "Розы и гермини",
+   "price": 4300,
+   "photo": "media/1325-hero.jpg",
+   "video": "media/1325.mp4",
+   "source": "https://t.me/cvetojuicy/1325",
+   "cat": "tender"
+  },
+  {
+   "id": "juicy-1319",
+   "name": "Ранункулюсы и розы",
+   "price": 5500,
+   "photo": "media/1319.jpg",
+   "video": "media/1319.mp4",
+   "source": "https://t.me/cvetojuicy/1319",
+   "cat": "tender"
+  },
+  {
+   "id": "juicy-1310",
+   "name": "Гортензия и диантус",
+   "price": 2350,
+   "photo": "media/1310.jpg",
+   "video": "media/1310.mp4",
+   "source": "https://t.me/cvetojuicy/1310",
+   "cat": "bright"
+  },
+  {
+   "id": "juicy-1313",
+   "name": "Розы и илекс",
+   "price": 5400,
+   "photo": "media/1313.jpg",
+   "source": "https://t.me/cvetojuicy/1313",
+   "cat": "bright"
+  },
+  {
+   "id": "juicy-1316",
+   "name": "Розы и ранункулюсы",
+   "price": 15100,
+   "photo": "media/1316.jpg",
+   "source": "https://t.me/cvetojuicy/1316",
+   "cat": "large"
+  },
+  {
+   "id": "juicy-1322",
+   "name": "Розы и хризантема",
+   "price": 2150,
+   "photo": "media/1322.jpg",
+   "source": "https://t.me/cvetojuicy/1322",
+   "cat": "tender"
+  },
+  {
+   "id": "juicy-1307",
+   "name": "Кустовая роза и эвкалипт",
+   "price": 3700,
+   "photo": "media/1307.jpg",
+   "source": "https://t.me/cvetojuicy/1307",
+   "cat": "tender"
+  }
+ ],
+ "refs": [
+  {
+   "id": "juicy-1325",
+   "name": "Розы и гермини",
+   "price": 4300,
+   "photo": "media/1325-hero.jpg",
+   "video": "media/1325.mp4",
+   "source": "https://t.me/cvetojuicy/1325",
+   "cat": "tender",
+   "from": false
+  },
+  {
+   "id": "juicy-1319",
+   "name": "Ранункулюсы и розы",
+   "price": 5500,
+   "photo": "media/1319.jpg",
+   "video": "media/1319.mp4",
+   "source": "https://t.me/cvetojuicy/1319",
+   "cat": "tender",
+   "from": false
+  },
+  {
+   "id": "juicy-1310",
+   "name": "Гортензия и диантус",
+   "price": 2350,
+   "photo": "media/1310.jpg",
+   "video": "media/1310.mp4",
+   "source": "https://t.me/cvetojuicy/1310",
+   "cat": "bright",
+   "from": false
+  },
+  {
+   "id": "juicy-1313",
+   "name": "Розы и илекс",
+   "price": 5400,
+   "photo": "media/1313.jpg",
+   "source": "https://t.me/cvetojuicy/1313",
+   "cat": "bright",
+   "from": false
+  },
+  {
+   "id": "juicy-1316",
+   "name": "Розы и ранункулюсы",
+   "price": 15100,
+   "photo": "media/1316.jpg",
+   "source": "https://t.me/cvetojuicy/1316",
+   "cat": "large",
+   "from": false
+  },
+  {
+   "id": "juicy-1322",
+   "name": "Розы и хризантема",
+   "price": 2150,
+   "photo": "media/1322.jpg",
+   "source": "https://t.me/cvetojuicy/1322",
+   "cat": "tender",
+   "from": false
+  },
+  {
+   "id": "juicy-1307",
+   "name": "Кустовая роза и эвкалипт",
+   "price": 3700,
+   "photo": "media/1307.jpg",
+   "source": "https://t.me/cvetojuicy/1307",
+   "cat": "tender",
+   "from": false
+  }
+ ],
+ "refCats": [
+  {
+   "id": "tender",
+   "name": "Нежные"
+  },
+  {
+   "id": "bright",
+   "name": "Яркие"
+  },
+  {
+   "id": "large",
+   "name": "Большие"
+  }
+ ],
+ "budgets": [
+  [
+   0,
+   2000
+  ],
+  [
+   2000,
+   3000
+  ],
+  [
+   3000,
+   4000
+  ],
+  [
+   4000,
+   5000
+  ],
+  [
+   5000,
+   6000
+  ],
+  [
+   6000,
+   7000
+  ],
+  [
+   7000,
+   8000
+  ],
+  [
+   8000,
+   9000
+  ],
+  [
+   9000,
+   10000
+  ],
+  [
+   10000,
+   null
+  ]
+ ],
+ "settings": {
+  "wrapThreshold": 6000
+ },
+ "shapes": [
+  {
+   "id": "round",
+   "name": "Круглый",
+   "price": 0
+  },
+  {
+   "id": "loose",
+   "name": "Раскидистый",
+   "price": 0
+  }
+ ],
+ "custom": [],
+ "floristOcc": [
+  {
+   "id": "o0",
+   "name": "На день рождения"
+  },
+  {
+   "id": "o1",
+   "name": "На свидание"
+  },
+  {
+   "id": "o2",
+   "name": "Без повода"
+  },
+  {
+   "id": "o3",
+   "name": "На юбилей"
+  },
+  {
+   "id": "o4",
+   "name": "Маме"
+  }
+ ],
+ "floristTone": [
+  {
+   "id": "t0",
+   "name": "Нежная"
+  },
+  {
+   "id": "t1",
+   "name": "Яркая"
+  }
+ ],
+ "reviews": [
+  {
+   "id": "ya-review-1",
+   "author": "спинозавр",
+   "date": "2026-11-19",
+   "text": "Прекрасные цветы, отличный магазинчик,не кусачие цены. Покупал 18.11 цветы, розы, прям вот только свежие только распакованные и привезенные этим же днём с базы.Свежак,ещё почти не раскрытые бутончики,вкусно пахнут.В общем рекомендую и спасибо за рекомендации по правильному содержанию розочек.",
+   "photos": []
+  },
+  {
+   "id": "ya-review-2",
+   "author": "Lika Papazyan",
+   "date": "2026-11-19",
+   "text": "Спасибо! Оперативно! Красиво! Лучшие ❤️",
+   "photos": []
+  },
+  {
+   "id": "ya-review-3",
+   "author": "Анна К.",
+   "date": "2026-11-18",
+   "text": "Добрый день!Выражаю большую благодарность магазину за составление такой замечательной композиции,учтены были все пожелания,да и ценник очень приятный,по карману)))Сестра была в восторге от такого подарка на свой ДР.Цветы все свежие,подобраны очень красиво,а запах какой от них чудный.Сестра не ожидала,так как я живу совсем в другом городе,а цветы были доставлены курьером.Ему отдельное…",
+   "photos": []
+  }
+ ],
+ "balloons": [],
+ "toys": [],
+ "works": [
+  {
+   "id": "juicy-work-01",
+   "photo": "media/work-01.jpg"
+  },
+  {
+   "id": "juicy-work-02",
+   "photo": "media/work-02.jpg"
+  },
+  {
+   "id": "juicy-work-03",
+   "photo": "media/work-03.jpg"
+  },
+  {
+   "id": "juicy-work-04",
+   "photo": "media/work-04.jpg"
+  },
+  {
+   "id": "juicy-work-05",
+   "photo": "media/work-05.jpg"
+  },
+  {
+   "id": "juicy-work-06",
+   "photo": "media/work-06.jpg"
+  },
+  {
+   "id": "juicy-work-07",
+   "photo": "media/work-07.jpg"
+  },
+  {
+   "id": "juicy-work-08",
+   "photo": "media/work-08.jpg"
+  },
+  {
+   "id": "juicy-work-09",
+   "photo": "media/work-09.jpg"
+  },
+  {
+   "id": "juicy-work-10",
+   "photo": "media/work-10.jpg"
+  }
+ ],
+ "staticClone": true,
+ "reviewsHidden": [],
+ "heroPhotos": [
+  "media/1325-hero.jpg"
+ ],
+ "locPhotos": [
+  "media/logo.jpg"
+ ],
+ "texts": {
+  "shop.name": "Цвето Джуси",
+  "hero.where": "Щербинка · Остафьевское шоссе, 14к1",
+  "hero.hours": "Ежедневно 10:00–22:00",
+  "showcase.title": "В наличии сегодня",
+  "showcase.lead": "Букеты из публикаций студии. Наличие и актуальную цену уточните у флориста.",
+  "refs.title": "Соберём для вас",
+  "refs.lead": "Примеры работ «Цвето Джуси». Выберите настроение и бюджет.",
+  "florist.lead": "Выберите бюджет и гамму — флорист предложит состав из цветов в наличии.",
+  "builder.title": "Соберите свой букет",
+  "builder.lead": "Нажмите на цветы, выберите оттенки и оформите заявку на сайте.",
+  "works.title": "Что мы собирали",
+  "works.lead": "Букеты студии «Цвето Джуси» из их Telegram-канала.",
+  "delivery.title": "Доставка и оплата",
+  "delivery.lead": "Самовывоз из студии в Щербинке и доставка по Москве. Время и стоимость уточните у флориста.",
+  "delivery.pickup": "Остафьевское шоссе, 14к1, ежедневно 10:00–22:00",
+  "delivery.ahead": "Выберите букет или соберите свой в конструкторе и оформите заявку на сайте.",
+  "delivery.pay": "Наличными, картой или переводом",
+  "contacts.lead": "Студия в Щербинке. Вопросы по букетам и доставке:",
+  "footer.seo": "Цвето Джуси — цветочная студия в Щербинке. Букеты и композиции, самовывоз и доставка по Москве."
+ },
+ "textFonts": {},
+ "rev": "juicy-20261120-v2-r2"
+}
