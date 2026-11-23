@@ -1,3 +1,13 @@
+if (document.body.dataset.annaHosted) {
+  try {
+    const { hydrateSite } = await import('./browser-render.js?v=1');
+    await hydrateSite();
+  } catch {
+    const status = document.querySelector('[data-edit-status]');
+    if (status) status.textContent = 'Браузер не смог открыть сохранённые правки.';
+  }
+}
+
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 const dialog = document.querySelector('#work-dialog');
 const workCards = [...document.querySelectorAll('[data-work-card]')];
