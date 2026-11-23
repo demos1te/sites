@@ -1198,6 +1198,3 @@ body.site .hero:has(.hero-art img) .hero-actions .button:focus-visible {
   body.site .hero:has(.hero-art img) .hero-art img { animation: none; }
   .venue-carousel-traveler { transition: none; }
 }
-
-.sandbox .event-grid article:not(:has(img)) { display: block; padding: clamp(16px, 2.2vw, 28px); }
-.mode-photo-credit { display: block; margin-top: .5rem; color: var(--soft); font-size: .75rem; }

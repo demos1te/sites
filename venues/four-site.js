@@ -57,7 +57,7 @@ function heroSection() {
   const primary = isBath ? 'Записаться' : isClub ? 'Аренда' : 'Выбрать дату';
   const secondary = isClub ? ['#events', 'Афиша'] : isBath ? ['#programs', 'Программы'] : ['#gallery', 'Галерея'];
   const alt = data.heroAlt || `Интерьер ${data.title}`;
-  const credit = data.heroCaption && data.hero ? '<span class="hero-photo-credit">Иллюстрация</span>' : '';
+  const credit = isBath && data.hero ? '<span class="hero-photo-credit">Иллюстрация</span>' : '';
   return `<section id="top" class="hero">
     <div class="hero-copy">
       <p class="micro">${escape(labels[slug].name)} · ${escape(labels[slug].city)}</p>
@@ -74,7 +74,6 @@ function heroSection() {
 
 function modePanel(mode) {
   return `${mode.image ? `<div id="mode-image">${photo(mode.image, mode.alt || mode.name)}</div>` : ''}
-    ${data.illustrative && mode.image ? '<small class="mode-photo-credit">Иллюстрация</small>' : ''}
     <p id="mode-text">${escape(mode.text)}</p>
     ${mode.features?.length ? `<ul class="mode-features">${mode.features.map(feature => `<li>${escape(feature)}</li>`).join('')}</ul>` : ''}
     <a id="mode-request" class="text-link" data-occasion="${escape(mode.name)}" href="#booking">Выбрать дату</a>`;
@@ -95,8 +94,8 @@ function formatSection() {
 function gallerySection() {
   if (!data.gallery.length) return '';
   return `<section id="gallery" class="section gallery-section reveal">
-    <div class="section-heading"><h2>${data.illustrative ? 'Атмосфера' : labels[slug].gallery}</h2></div>
-    ${renderGallery(data.gallery, { className: 'room-gallery', label: data.illustrative ? 'Иллюстрации' : 'Фотографии пространства' })}
+    <div class="section-heading"><h2>${labels[slug].gallery}</h2></div>
+    ${renderGallery(data.gallery, { className: 'room-gallery' })}
   </section>`;
 }
 
