@@ -1,0 +1,131 @@
+:root {
+  --ease-arrival: cubic-bezier(.22, .68, .24, 1);
+  --ease-feedback: cubic-bezier(.25, .8, .3, 1);
+}
+
+/* Keep each move tied to its input: choosing a page, swiping a frame, or opening details. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-editing]) body:not([data-editing]) #catalog-view .view {
+    --view-arrival-start: .8;
+    animation: view-arrival 310ms var(--ease-arrival) both;
+  }
+
+  .occasion-arrow {
+    transition: transform 180ms var(--ease-feedback);
+  }
+
+  .gallery-marker {
+    transition: transform 235ms var(--ease-arrival);
+  }
+
+  .occasion-card:focus-visible .occasion-arrow {
+    transform: translateX(3px);
+  }
+
+  .gallery[data-direction="next"] .gallery-frame:not([hidden]) {
+    --enter-from: 8px;
+    animation: frame-arrival 235ms var(--ease-arrival) both;
+  }
+
+  .gallery[data-direction="previous"] .gallery-frame:not([hidden]) {
+    --enter-from: -8px;
+    animation: frame-arrival 235ms var(--ease-arrival) both;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .occasion-card:hover .occasion-arrow {
+      transform: translateX(3px);
+    }
+  }
+  .occasion-media { transition: transform 190ms var(--ease-feedback); }
+  .occasion-card:active .occasion-media { transform: scale(1.022); }
+
+  @supports (transition-behavior: allow-discrete) {
+    .work-dialog {
+      opacity: 0;
+      transform: translateY(8px) scale(.99);
+      transition:
+        opacity 220ms var(--ease-arrival),
+        transform 280ms var(--ease-arrival),
+        display 260ms allow-discrete,
+        overlay 260ms allow-discrete;
+    }
+
+    .work-dialog:not([open]),
+    .work-dialog:not([open])::backdrop {
+      pointer-events: none;
+    }
+
+    .work-dialog[open] {
+      opacity: 1;
+      transform: none;
+    }
+
+    .work-dialog::backdrop {
+      opacity: 0;
+      transition: opacity 220ms var(--ease-arrival), display 260ms allow-discrete, overlay 260ms allow-discrete;
+    }
+
+    .work-dialog[open]::backdrop {
+      opacity: 1;
+    }
+
+    @starting-style {
+      .work-dialog[open] {
+        opacity: 0;
+        transform: translateY(8px) scale(.99);
+      }
+
+      .work-dialog[open]::backdrop {
+        opacity: 0;
+      }
+    }
+  }
+
+  @supports not (transition-behavior: allow-discrete) {
+    .work-dialog[open] {
+      animation: view-arrival 270ms var(--ease-arrival) both;
+    }
+
+    .work-dialog[open]::backdrop {
+      animation: backdrop-arrival 220ms var(--ease-arrival) both;
+    }
+  }
+}
+
+@keyframes view-arrival {
+  from { opacity: var(--view-arrival-start, 0); transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes frame-arrival {
+  from { opacity: .76; transform: translateX(var(--enter-from)); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes backdrop-arrival {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #catalog-view,
+  #catalog-view *,
+  .work-dialog,
+  .work-dialog *,
+  .work-dialog::backdrop {
+    scroll-behavior: auto;
+    animation: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body:not([data-editing]) [data-reveal="visible"] {
+    animation: card-scroll-arrival var(--reveal-duration, 270ms) var(--ease-arrival) both;
+  }
+}
+@keyframes card-scroll-arrival {
+  from { opacity: .72; transform: translate(var(--reveal-offset, 0), var(--reveal-rise, 9px)); }
+  to { opacity: 1; transform: none; }
+}

@@ -1,0 +1,361 @@
+/* Journal: warm paper, serif headlines, and a fine rule under each caption. */
+body[data-theme="journal"] {
+  --paper: #faf7ef;
+  --surface: #fffdf8;
+  --ink: #30251d;
+  --muted: #6d5d4e;
+  --line: #d9cdbb;
+  --accent: #754c33;
+  --display: Prata, Georgia, serif;
+  --corner: 2px;
+  --page-width: 1080px;
+}
+
+body[data-background-image="true"] {
+  --photo-wash: color-mix(in srgb, var(--paper) 77%, transparent);
+  background-image: linear-gradient(var(--photo-wash), var(--photo-wash)), var(--custom-background, none);
+}
+
+[data-theme="journal"] .hero {
+  text-align: left;
+  padding-block: clamp(34px, 6vw, 80px) clamp(24px, 4vw, 46px);
+  border-bottom: 1px solid var(--line);
+}
+
+[data-theme="journal"] .hero-title {
+  max-width: 13ch;
+  margin-inline: 0;
+  font-size: clamp(2.15rem, 5.4vw, 4.65rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -.055em;
+}
+
+[data-theme="journal"] .hero-intro {
+  max-width: 39ch;
+  margin-inline: 0;
+}
+
+[data-theme="journal"] :is(.occasion-card, .work-card) {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-theme="journal"] .occasion-media {
+  aspect-ratio: 5 / 3;
+}
+
+[data-theme="journal"] :is(.occasion-caption, .work-caption) {
+  padding: .66rem 0 .75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-theme="journal"] .occasion-title {
+  font-family: var(--display);
+  font-weight: 400;
+}
+
+/* Album: centered composition, generous mats, and a soft corner. */
+body[data-theme="album"] {
+  --paper: #f2e9dc;
+  --surface: #fcf7ee;
+  --ink: #432e24;
+  --muted: #725b4e;
+  --line: #d7c3af;
+  --accent: #884d37;
+  --display: Prata, Georgia, serif;
+  --corner: 19px;
+  --page-width: 920px;
+  --gap: clamp(12px, 2.5vw, 24px);
+}
+
+[data-theme="album"] .site-header {
+  background-color: var(--paper);
+}
+
+[data-theme="album"] .theme-switch {
+  margin-block: 3px 8px;
+}
+
+[data-theme="album"] .theme-switch button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+
+[data-theme="album"] .theme-switch button[aria-pressed="true"] {
+  border-color: var(--line);
+  background: var(--surface);
+}
+
+[data-theme="album"] .hero {
+  margin-block: clamp(16px, 3vw, 34px) clamp(18px, 3vw, 32px);
+  padding: clamp(26px, 5.5vw, 68px) clamp(16px, 4vw, 48px);
+  border: 1px solid var(--line);
+  border-radius: max(24px, var(--corner));
+  background: var(--surface);
+  text-align: center;
+}
+
+[data-theme="album"] .hero-title {
+  max-width: 18ch;
+  margin-inline: auto;
+  font-size: clamp(2rem, 5.2vw, 4.1rem);
+  font-weight: 400;
+  line-height: 1.13;
+  letter-spacing: -.045em;
+}
+
+[data-theme="album"] .hero-intro {
+  max-width: 37ch;
+  margin-inline: auto;
+}
+
+[data-theme="album"] .occasion-card {
+  padding: clamp(6px, 1.25vw, 13px);
+  border: 1px solid var(--line);
+  border-radius: var(--corner);
+  background: var(--surface);
+}
+
+[data-theme="album"] .occasion-media {
+  aspect-ratio: 5 / 4;
+  border-radius: calc(var(--corner) - 6px);
+}
+
+[data-theme="album"] .occasion-caption {
+  padding: .62rem .24rem .26rem;
+}
+
+[data-theme="album"] .occasion-title {
+  font-family: var(--display);
+  font-weight: 400;
+}
+
+[data-theme="album"] .work-card {
+  padding: clamp(6px, 1.25vw, 13px);
+  border: 1px solid var(--line);
+  border-radius: var(--corner);
+  background: var(--surface);
+}
+
+[data-theme="album"] .work-card .gallery-stage {
+  border-radius: calc(var(--corner) - 6px);
+}
+
+[data-theme="album"] .work-caption {
+  padding: .7rem .24rem .32rem;
+}
+
+/* Studio: a compact rhythm, square frames, and an even grid. */
+body[data-theme="studio"] {
+  --paper: #f3f0e9;
+  --surface: #fbf9f4;
+  --ink: #282720;
+  --muted: #605b50;
+  --line: #afa89a;
+  --accent: #41453a;
+  --display: Golos, "Golos Text", system-ui, sans-serif;
+  --corner: 0px;
+  --page-width: 1160px;
+  --gap: 1px;
+}
+
+[data-theme="studio"] .site-header {
+  border-bottom: 1px solid var(--ink);
+}
+
+[data-theme="studio"] .hero {
+  padding-block: clamp(25px, 5vw, 70px) clamp(20px, 4vw, 46px);
+  text-align: left;
+}
+
+[data-theme="studio"] .hero-title {
+  max-width: 16ch;
+  margin-inline: 0;
+  font-size: clamp(2.2rem, 6.2vw, 5.2rem);
+  font-weight: 700;
+  line-height: .99;
+  letter-spacing: -.07em;
+}
+
+[data-theme="studio"] .hero-intro {
+  max-width: 46ch;
+  margin-inline: 0;
+}
+
+[data-theme="studio"] :is(.occasion-grid, .work-grid) {
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+[data-theme="studio"] :is(.occasion-card, .work-card) {
+  border: 0;
+  border-radius: 0;
+  background: var(--surface);
+}
+
+[data-theme="studio"] .occasion-media {
+  aspect-ratio: 1;
+  border-bottom: 1px solid var(--line);
+}
+
+[data-theme="studio"] :is(.occasion-caption, .work-caption) {
+  padding-inline: clamp(9px, 1.6vw, 20px);
+}
+
+[data-theme="studio"] :is(.occasion-title, .work-title) {
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+
+[data-theme="studio"] .work-price {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 760px) {
+  [data-theme="studio"] .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: end;
+    gap: clamp(24px, 6vw, 85px);
+  }
+
+  [data-theme="studio"] .hero-intro {
+    margin-block: 0 .14em;
+  }
+}
+
+/* Cover and catalogue have independent visual rhythms in each variant. */
+.view--home { padding-top: clamp(14px, 3vw, 36px); }
+.home-hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: clamp(470px, 76svh, 710px);
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(24px, 6vw, 76px);
+  background-color: var(--uploaded-hero-color, var(--cover-surface));
+  color: var(--cover-ink);
+}
+.home-hero::before, .home-hero::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+.home-hero::before {
+  inset: 0;
+  background: var(--uploaded-hero, var(--cover-photo)) var(--cover-position, center) / cover no-repeat;
+}
+.home-hero::after { inset: 0; background: var(--cover-wash); }
+.home-hero-copy { position: relative; max-width: 590px; }
+.home-name { margin-bottom: .9em; font-size: clamp(14px, 2vw, 18px); font-weight: 600; }
+.home-hero .hero-title { font-size: clamp(42px, 7.2vw, 96px); max-width: 11ch; }
+.home-hero .hero-intro { color: inherit; line-height: 1.48; max-width: 38ch; }
+.home-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 23px; }
+.browse-catalogue, .hero-edit-background {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 1px solid var(--cover-ink);
+  border-radius: var(--corner);
+  color: var(--cover-button-ink);
+  background: var(--cover-ink);
+  font-weight: 600;
+  font-size: 13px;
+}
+.hero-edit-background { color: var(--cover-ink); background: var(--cover-surface); }
+.home-hero[data-custom-hero] { --cover-photo: none; --cover-wash: linear-gradient(0deg, var(--uploaded-hero-color, var(--cover-surface)) 0%, transparent 74%); }
+.home-hero[data-dark-hero] { --cover-ink: #fff9f1; --cover-button-ink: #30251d; }
+.home-catalogue:focus { outline: none; }
+.catalogue-head {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-block: 0 clamp(17px, 3vw, 31px);
+}
+.catalogue-title {
+  margin: 0;
+  font: 400 clamp(30px, 6vw, 49px)/1.1 var(--display);
+  letter-spacing: -.045em;
+}
+
+[data-theme="journal"] .home-hero {
+  --cover-photo: url('./journal-bouquet.webp');
+  --cover-surface: #f3eae0;
+  --cover-ink: #32271f;
+  --cover-button-ink: #fff8f0;
+  --cover-position: 68% 52%;
+  --cover-wash: linear-gradient(90deg, #f7efe7 0%, #f7efe7ef 30%, #f7efe716 72%);
+}
+[data-theme="journal"] .home-hero::before { background-size: auto 128%; background-position: right 10% center; }
+
+[data-theme="album"] .home-hero {
+  --cover-photo: url('./album-bouquet.webp');
+  --cover-surface: #f6e7d8;
+  --cover-ink: #463024;
+  --cover-button-ink: #fff8f0;
+  --cover-position: center 54%;
+  --cover-wash: linear-gradient(0deg, #faeee0 9%, #faeee0dc 34%, transparent 74%);
+  border-radius: 110px 110px 19px 19px;
+  text-align: center;
+  justify-items: center;
+}
+[data-theme="album"] .home-hero .hero-title { max-width: 13ch; margin-inline: auto; }
+[data-theme="album"] .home-name { margin-bottom: .65em; }
+[data-theme="album"] .home-hero-actions { justify-content: center; }
+[data-theme="album"] :is(.occasion-grid, .work-grid) > * {
+  --reveal-offset: clamp(28px, 7vw, 76px);
+  --reveal-rise: 14px;
+  --reveal-duration: 320ms;
+}
+[data-theme="album"] :is(.occasion-grid, .work-grid) > :nth-child(even) {
+  --reveal-offset: calc(-1 * clamp(28px, 7vw, 76px));
+}
+
+[data-theme="studio"] .home-hero {
+  --cover-photo: url('./studio-bouquet.webp');
+  --cover-surface: #352720;
+  --cover-ink: #fff6ec;
+  --cover-button-ink: #30241c;
+  --cover-position: center 52%;
+  --cover-wash: linear-gradient(90deg, #352720 19%, #352720bf 42%, transparent 74%);
+}
+[data-theme="studio"] .home-hero::before { inset-inline-start: 27%; }
+[data-theme="studio"] .home-hero .hero-title { max-width: 10ch; }
+[data-theme="studio"] :is(.occasion-grid, .work-grid) {
+  gap: clamp(10px, 1.8vw, 24px);
+  border: 0;
+  background: transparent;
+}
+[data-theme="studio"] :is(.occasion-card, .work-card) { border: 1px solid var(--line); }
+[data-theme="studio"] .occasion-media { aspect-ratio: 1.4; }
+[data-theme="studio"] .occasion-caption { padding-bottom: 10px; }
+
+body[data-theme] .home-hero[data-custom-hero] {
+  --cover-photo: none;
+  --cover-wash: linear-gradient(0deg, var(--uploaded-hero-color, var(--cover-surface)) 0%, transparent 100%);
+}
+body[data-theme] .home-hero[data-custom-hero]::before {
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+@media (max-width: 680px) {
+  .home-hero { min-height: clamp(475px, 74svh, 635px); padding: clamp(18px, 5vw, 34px); }
+  .home-hero .hero-title { font-size: clamp(37px, 10vw, 68px); }
+  [data-theme="journal"] .home-hero::before { background-size: cover; background-position: center 38%; }
+  [data-theme="journal"] .home-hero {
+    --cover-wash: linear-gradient(0deg, #f7efe7 8%, #f7efe7eb 33%, #f7efe700 75%);
+  }
+  [data-theme="album"] .home-hero { border-radius: 82px 82px 15px 15px; }
+  [data-theme="studio"] .home-hero::before { inset-inline-start: 0; }
+  [data-theme="studio"] .home-hero {
+    --cover-wash: linear-gradient(0deg, #352720 9%, #352720ce 36%, #35272000 80%);
+  }
+}

@@ -1,0 +1,181 @@
+body:not([data-editing]) .editor-only {
+  display: none !important;
+}
+
+body[data-editing] [data-edit-path][data-edit-type] {
+  cursor: pointer;
+  outline: 1px dashed #8f6951;
+  outline-offset: 3px;
+}
+
+body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
+  outline: 2px solid #75513a;
+}
+
+.catalog-editor-dialog {
+  color: #362820;
+  background: #fffaf3;
+  inline-size: min(100% - 24px, 470px);
+  max-inline-size: none;
+  max-block-size: min(90vh, 90dvh);
+  border: 1px solid #e8d9cb;
+  border-radius: 18px;
+  box-shadow: 0 24px 72px #49331f40;
+  padding: 0;
+  overflow: auto;
+}
+
+.catalog-editor-dialog::backdrop {
+  background: #30231673;
+}
+
+.catalog-editor-dialog[open] {
+  animation: catalog-editor-in 190ms ease-out both;
+}
+
+@keyframes catalog-editor-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.catalog-editor-panel {
+  padding: clamp(16px, 4vw, 24px);
+  font: 400 15px/1.5 Golos, Arial, sans-serif;
+}
+
+.catalog-editor-panel header,
+.catalog-editor-panel footer,
+.catalog-editor-media-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-editor-panel header {
+  justify-content: space-between;
+  margin-block-end: 14px;
+}
+
+.catalog-editor-panel h2 {
+  margin: 0;
+  font: 600 clamp(19px, 4.7vw, 24px)/1.25 Golos, Arial, sans-serif;
+}
+
+.catalog-editor-panel button {
+  min-height: 44px;
+  border-radius: 9px;
+  border: 1px solid #dac7b5;
+  background: #fffaf3;
+  padding: 7px 12px;
+  color: #513729;
+  font: inherit;
+  cursor: pointer;
+}
+
+.catalog-editor-panel button:focus-visible,
+.catalog-editor-field :is(input, textarea):focus-visible {
+  outline: 2px solid #75513a;
+  outline-offset: 2px;
+}
+
+.catalog-editor-panel header button {
+  min-width: 44px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+[data-editor-fields] {
+  display: grid;
+  gap: 12px;
+}
+
+.catalog-editor-panel footer {
+  margin-block-start: 18px;
+}
+
+.catalog-editor-panel button.catalog-editor-submit {
+  background: #563b2c;
+  border-color: #563b2c;
+  color: #fffaf5;
+}
+
+.catalog-editor-panel button:disabled {
+  cursor: progress;
+  opacity: .65;
+}
+
+.catalog-editor-field {
+  display: grid;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.catalog-editor-field :is(input, textarea) {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid #d4bca5;
+  border-radius: 8px;
+  background: #fffefa;
+  color: #362820;
+  font: 400 16px/1.43 Golos, Arial, sans-serif;
+}
+
+.catalog-editor-field input[type="color"] {
+  cursor: pointer;
+}
+
+.catalog-editor-field textarea {
+  min-height: 92px;
+  overflow: auto;
+  resize: none;
+}
+
+.catalog-editor-preview {
+  position: relative;
+  width: 100%;
+  height: clamp(76px, 22vw, 132px);
+  overflow: hidden;
+  border-radius: 9px;
+}
+
+.catalog-editor-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.catalog-editor-preview img[hidden] {
+  display: none;
+}
+
+.catalog-editor-error {
+  color: #a02e28;
+  margin: 12px 0 0;
+}
+
+.catalog-editor-status {
+  position: fixed;
+  z-index: 5000;
+  inset: auto 12px calc(12px + env(safe-area-inset-bottom)) auto;
+  margin: 0;
+  max-width: min(340px, calc(100% - 24px));
+  border-radius: 10px;
+  background: #563b2c;
+  padding: 9px 14px;
+  box-shadow: 0 6px 25px #49331f34;
+  color: #fffaf5;
+  font: 400 14px/1.45 Golos, Arial, sans-serif;
+  pointer-events: none;
+}
+
+.catalog-editor-status:empty {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-editor-dialog[open] { animation: none; }
+}
