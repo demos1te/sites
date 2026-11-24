@@ -1,0 +1,239 @@
+{
+  "cake-lambeth": {
+    "src": "assets/cake-lambeth.webp",
+    "small": "assets/cake-lambeth-small.webp",
+    "width": 640,
+    "height": 800,
+    "title": "Торт в стиле ламбет",
+    "alt": "Розово-белый торт с воланами из крема на голубом фоне.",
+    "source": "https://t.me/nkhoroshko/6045",
+    "mediaPost": "https://t.me/nkhoroshko/6045",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "bento-berries": {
+    "src": "assets/bento-berries.webp",
+    "small": "assets/bento-berries-small.webp",
+    "width": 640,
+    "height": 800,
+    "title": "Бенто с ягодами",
+    "alt": "Розовый бенто с малиной, черникой и свечами в форме цифр.",
+    "source": "https://t.me/nkhoroshko/6072",
+    "mediaPost": "https://t.me/nkhoroshko/6072",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "bento-xl": {
+    "src": "assets/bento-xl.webp",
+    "small": "assets/bento-xl-small.webp",
+    "width": 641,
+    "height": 800,
+    "title": "Бенто XL с рисунком",
+    "alt": "Небольшой круглый торт с яркими фигурками и росписью.",
+    "source": "https://t.me/nkhoroshko/6074",
+    "mediaPost": "https://t.me/nkhoroshko/6074",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "bento-honey": {
+    "src": "assets/bento-honey.webp",
+    "small": "assets/bento-honey-small.webp",
+    "width": 640,
+    "height": 800,
+    "title": "Бенто-медовик",
+    "alt": "Круглый бенто-медовик с малиной по краю и надписью в центре.",
+    "source": "https://t.me/nkhoroshko/5887",
+    "mediaPost": "https://t.me/nkhoroshko/5888",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "cake-ruby": {
+    "src": "assets/cake-ruby.webp",
+    "small": "assets/cake-ruby-small.webp",
+    "width": 640,
+    "height": 800,
+    "title": "Торт «Руби»",
+    "alt": "Зелёный торт в разрезе с яркими ягодными слоями.",
+    "source": "https://t.me/nkhoroshko/6119",
+    "mediaPost": "https://t.me/nkhoroshko/6119",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "honey-berries": {
+    "src": "assets/honey-berries.webp",
+    "small": "assets/honey-berries-small.webp",
+    "width": 600,
+    "height": 800,
+    "title": "Медовик с ягодами",
+    "alt": "Медовик с золотистой обсыпкой, клубникой и черникой сверху.",
+    "source": "https://t.me/nkhoroshko/5551",
+    "mediaPost": "https://t.me/nkhoroshko/5551",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "honey-fire": {
+    "src": "assets/honey-fire.webp",
+    "small": "assets/honey-fire-small.webp",
+    "width": 640,
+    "height": 800,
+    "title": "Медовик «Пожарный»",
+    "alt": "Медовик с красно-жёлтым декором и фигуркой пожарной машины.",
+    "source": "https://t.me/nkhoroshko/6123",
+    "mediaPost": "https://t.me/nkhoroshko/6123",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "filling-chocolate": {
+    "src": "assets/filling-chocolate.webp",
+    "small": "assets/filling-chocolate-small.webp",
+    "width": 372,
+    "height": 444,
+    "title": "Шоколадная начинка",
+    "alt": "Шоколадный торт в разрезе с тёмными коржами и кремом.",
+    "source": "https://t.me/nkhoroshko/6113",
+    "mediaPost": "https://t.me/nkhoroshko/6113",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "filling-strawberry": {
+    "src": "assets/filling-strawberry.webp",
+    "width": 768,
+    "height": 576,
+    "title": "Клубничная начинка",
+    "alt": "Сливочный бисквитный торт в разрезе с клубничными слоями.",
+    "source": null,
+    "credit": "Иллюстративное изображение, сгенерированное для демонстрации выбора"
+  },
+  "filling-lingonberry": {
+    "src": "assets/filling-lingonberry.webp",
+    "width": 520,
+    "height": 650,
+    "title": "Брусника с маком",
+    "alt": "Торт Руби в разрезе с брусничной прослойкой и маковыми коржами.",
+    "source": "https://t.me/nkhoroshko/6119",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "filling-cranberry": {
+    "src": "assets/filling-cranberry.webp",
+    "width": 520,
+    "height": 650,
+    "title": "Клюква и инжир",
+    "alt": "Медовик в разрезе с клюквой и инжиром.",
+    "source": "https://t.me/nkhoroshko/5895",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "custom-cake": {
+    "src": "assets/custom-cake.webp",
+    "small": "assets/custom-cake.webp",
+    "width": 960,
+    "height": 720,
+    "title": "Свой вариант",
+    "alt": "Иллюстративное фото торта с кремовым декором.",
+    "source": null,
+    "credit": "Сгенерированный пример"
+  },
+  "gingerbread-house": {
+    "src": "assets/gingerbread-house.webp",
+    "small": "assets/gingerbread-house.webp",
+    "width": 600,
+    "height": 750,
+    "title": "Пряничный домик",
+    "alt": "Объёмный пряничный домик, расписанный подсолнухами.",
+    "source": "https://t.me/nkhoroshko/4379",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "gingerbread-cats": {
+    "src": "assets/gingerbread-cats.webp",
+    "small": "assets/gingerbread-cats.webp",
+    "width": 600,
+    "height": 750,
+    "title": "Пряники «Котосова»",
+    "alt": "Фигурные пряники с росписью в подарочной коробке.",
+    "source": "https://t.me/nkhoroshko/5599",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "zephyr-bouquet": {
+    "src": "assets/zephyr-bouquet.webp",
+    "small": "assets/zephyr-bouquet.webp",
+    "width": 562,
+    "height": 750,
+    "title": "Зефирный букет",
+    "alt": "Букет из зефирных цветов.",
+    "source": "https://t.me/nkhoroshko/4962",
+    "credit": "Публичная публикация Надежды Хорошко",
+    "mediaPost": "https://t.me/nkhoroshko/4963"
+  },
+  "zephyr-box": {
+    "src": "assets/zephyr-box.webp",
+    "small": "assets/zephyr-box.webp",
+    "width": 600,
+    "height": 750,
+    "title": "Зефир в коробке",
+    "alt": "Набор зефира в коробке с оформлением в виде роз.",
+    "source": "https://t.me/nkhoroshko/5394",
+    "credit": "Публичная публикация Надежды Хорошко",
+    "mediaPost": "https://t.me/nkhoroshko/5395"
+  },
+  "cupcakes-wedding": {
+    "src": "assets/cupcakes-wedding.webp",
+    "small": "assets/cupcakes-wedding.webp",
+    "width": 600,
+    "height": 449,
+    "title": "Свадебные капкейки",
+    "alt": "Набор шоколадных капкейков со светлым кремом.",
+    "source": "https://t.me/nkhoroshko/6022",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "cupcakes-party": {
+    "src": "assets/cupcakes-party.webp",
+    "small": "assets/cupcakes-party.webp",
+    "width": 600,
+    "height": 450,
+    "title": "Праздничные капкейки",
+    "alt": "Капкейки с цветным школьным оформлением.",
+    "source": "https://t.me/nkhoroshko/5759",
+    "credit": "Публичная публикация Надежды Хорошко"
+  },
+  "custom-bento": {
+    "src": "assets/custom-bento.webp",
+    "small": "assets/custom-bento.webp",
+    "width": 512,
+    "height": 512,
+    "title": "Свой вариант",
+    "alt": "Иллюстративное фото небольшого торта с малиной в коробочке.",
+    "source": null,
+    "credit": "Сгенерированный пример"
+  },
+  "custom-honey": {
+    "src": "assets/custom-honey.webp",
+    "small": "assets/custom-honey.webp",
+    "width": 512,
+    "height": 512,
+    "title": "Свой вариант",
+    "alt": "Иллюстративное фото медовика с золотистой обсыпкой.",
+    "source": null,
+    "credit": "Сгенерированный пример"
+  },
+  "custom-gingerbread": {
+    "src": "assets/custom-gingerbread.webp",
+    "small": "assets/custom-gingerbread.webp",
+    "width": 512,
+    "height": 512,
+    "title": "Свой вариант",
+    "alt": "Иллюстративное фото пряников в форме звёзд и сердец.",
+    "source": null,
+    "credit": "Сгенерированный пример"
+  },
+  "custom-zephyr": {
+    "src": "assets/custom-zephyr.webp",
+    "small": "assets/custom-zephyr.webp",
+    "width": 512,
+    "height": 512,
+    "title": "Свой вариант",
+    "alt": "Иллюстративное фото зефира в коробке, оформленного в виде роз.",
+    "source": null,
+    "credit": "Сгенерированный пример"
+  },
+  "custom-cupcakes": {
+    "src": "assets/custom-cupcakes.webp",
+    "small": "assets/custom-cupcakes.webp",
+    "width": 512,
+    "height": 512,
+    "title": "Свой вариант",
+    "alt": "Иллюстративное фото капкейков с розовым и белым кремом.",
+    "source": null,
+    "credit": "Сгенерированный пример"
+  }
+}
