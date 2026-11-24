@@ -1,0 +1,72 @@
+{
+  "channel": "https://t.me/romansomskomphoto55",
+  "usage": "Атрибуция для локального сравнения. Медиа взяты из общедоступных публикаций канала фотографа.",
+  "photos": [
+    {
+      "src": "./assets/stage-violet.webp",
+      "alt": "Исполнитель в сиреневом сценическом свете.",
+      "title": "Сцена в цвете",
+      "source": "https://t.me/romansomskomphoto55/9436",
+      "mediaPost": "https://t.me/romansomskomphoto55/9436",
+      "credit": "Роман Макарьев · публичный предпросмотр Telegram",
+      "kind": "Фотография",
+      "width": 800,
+      "height": 525
+    },
+    {
+      "src": "./assets/stage-monochrome.webp",
+      "alt": "Чёрно-белый концертный кадр с лучами света и двойной экспозицией.",
+      "title": "Свет и звук",
+      "source": "https://t.me/romansomskomphoto55/9563",
+      "mediaPost": "https://t.me/romansomskomphoto55/9565",
+      "credit": "Роман Макарьев · публичный предпросмотр Telegram",
+      "kind": "Фотография",
+      "width": 800,
+      "height": 597
+    },
+    {
+      "src": "./assets/festival-wide.webp",
+      "alt": "Широкий кадр летней сцены и зрителей под открытым небом.",
+      "title": "Сцена и город",
+      "source": "https://t.me/romansomskomphoto55/9436",
+      "mediaPost": "https://t.me/romansomskomphoto55/9438",
+      "credit": "Роман Макарьев · публичный предпросмотр Telegram",
+      "kind": "Фотография",
+      "width": 800,
+      "height": 522
+    },
+    {
+      "src": "./assets/hockey-play.webp",
+      "alt": "Хоккеисты борются за шайбу у борта.",
+      "title": "На льду",
+      "source": "https://t.me/romansomskomphoto55/9770",
+      "mediaPost": "https://t.me/romansomskomphoto55/9772",
+      "credit": "Роман Макарьев · публичный предпросмотр Telegram",
+      "kind": "Фотография",
+      "width": 800,
+      "height": 533
+    },
+    {
+      "src": "./assets/hockey-crowd.webp",
+      "alt": "Болельщики поднимают шарфы на трибунах хоккейной арены.",
+      "title": "На трибунах",
+      "source": "https://t.me/romansomskomphoto55/9770",
+      "mediaPost": "https://t.me/romansomskomphoto55/9771",
+      "credit": "Роман Макарьев · публичный предпросмотр Telegram",
+      "kind": "Фотография",
+      "width": 800,
+      "height": 533
+    },
+    {
+      "src": "./assets/hit-me-baby.webp",
+      "alt": "Певица с микрофоном на сцене под синим и розовым светом.",
+      "title": "HIT ME BABY",
+      "source": "https://t.me/romansomskomphoto55/9779",
+      "mediaPost": "https://t.me/romansomskomphoto55/9779",
+      "credit": "Роман Макарьев · публичный предпросмотр Telegram · стоп-кадр на 0:08",
+      "kind": "Кадр из видео",
+      "width": 630,
+      "height": 1120
+    }
+  ]
+}
