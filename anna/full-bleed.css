@@ -177,6 +177,24 @@ body[data-theme="album"] .home-hero {
   --cover-ink: #36231b;
   text-shadow: 0 1px 16px #fff3eacd;
 }
+body[data-theme="album"] :is(.home-catalogue, .view--sections, .view--works) {
+  width: min(100% - 2 * var(--gutter), 680px);
+}
+body[data-theme="album"] :is(.occasion-grid, .work-grid) {
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+  row-gap: clamp(18px, 4vw, 30px);
+}
+body[data-theme="album"] :is(.occasion-grid, .work-grid) > :is(.occasion-card, .work-card) {
+  justify-self: end;
+  width: 84%;
+}
+body[data-theme="album"] :is(.occasion-grid, .work-grid) > :is(.occasion-card, .work-card):nth-child(even) {
+  justify-self: start;
+}
+body[data-theme="album"] .home-catalogue .occasion-card {
+  min-height: clamp(180px, 34dvh, 310px);
+}
 body[data-theme="journal"] .home-catalogue .occasion-caption {
   padding-inline: 10px;
   background: color-mix(in srgb, var(--surface) 90%, transparent);
