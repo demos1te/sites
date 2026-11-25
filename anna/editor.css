@@ -14,7 +14,7 @@ body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
 
 .catalog-editor-dialog {
   color: #362820;
-  background: #fffaf3;
+  background: #fffaf3f5;
   inline-size: min(100% - 24px, 470px);
   max-inline-size: none;
   max-block-size: min(90vh, 90dvh);
@@ -31,6 +31,10 @@ body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
 
 .catalog-editor-dialog[open] {
   animation: catalog-editor-in 190ms ease-out both;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .catalog-editor-dialog[open] { animation: none; }
 }
 
 @keyframes catalog-editor-in {
@@ -74,7 +78,7 @@ body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
 }
 
 .catalog-editor-panel button:focus-visible,
-.catalog-editor-field :is(input, textarea):focus-visible {
+.catalog-editor-field :is(input, textarea, select):focus-visible {
   outline: 2px solid #75513a;
   outline-offset: 2px;
 }
@@ -111,7 +115,7 @@ body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
   font-weight: 600;
 }
 
-.catalog-editor-field :is(input, textarea) {
+.catalog-editor-field :is(input, textarea, select) {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -160,7 +164,7 @@ body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
 .catalog-editor-status {
   position: fixed;
   z-index: 5000;
-  inset: auto 12px calc(12px + env(safe-area-inset-bottom)) auto;
+  inset: auto 12px calc(var(--anna-bottom-space, 24px) + 10px) auto;
   margin: 0;
   max-width: min(340px, calc(100% - 24px));
   border-radius: 10px;

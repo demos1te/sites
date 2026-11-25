@@ -3,7 +3,7 @@ import { createGlass } from './liquid-glass.js';
 const root = document.documentElement;
 const body = document.body;
 const catalog = document.querySelector('#catalog-view');
-const surfaceSelector = '.browse-catalogue, .theme-switch, .catalogue-head, .collection-hero, .occasion-card, .work-card, .work-dialog[open] .detail-copy, .work-dialog[open] .dialog-close';
+const mobile = matchMedia('(pointer: coarse)');
 const solidSurface = matchMedia('(prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active)');
 const surfaces = new Set();
 const lenses = new Map();
@@ -44,7 +44,7 @@ function alignOnFrame() {
 
 function geometryMoves(event) {
   const slidesIn = /^(view-arrival|card-scroll-arrival)$/.test(event.animationName);
-  const morphs = event.propertyName === 'transform' && event.target.matches('.work-dialog, .browse-catalogue');
+  const morphs = event.propertyName === 'transform' && event.target.matches('.browse-catalogue');
   return slidesIn || morphs;
 }
 
@@ -83,16 +83,14 @@ function showGlass(target) {
   optic.append(pixels);
   target.prepend(optic);
 
-  const control = target.matches('.browse-catalogue, .theme-switch, .dialog-close');
   const radius = Math.min(+(parseFloat(getComputedStyle(target).borderTopLeftRadius) || 0), target.offsetHeight / 2, target.offsetWidth / 2);
   try {
     // The SVG filter applies to the clipped backdrop pixels, never to the labels.
     const glass = createGlass(pixels, {
       fit: true, radius,
-      refraction: control ? 19 : 25,
-      bezel: control ? 0.76 : 0.34,
-      curvature: control ? 2.5 : 4,
-      chroma: 0.14, blur: 1.1, specular: 0.7, specularWidth: 1.8, mapScale: 0.85,
+      refraction: 19, bezel: 0.76, curvature: 2.5,
+      chroma: mobile.matches ? 0 : 0.14, blur: mobile.matches ? 0 : 1.1,
+      specular: 0.7, specularWidth: 1.8, mapScale: mobile.matches ? 0.55 : 0.85,
     });
     lenses.set(target, { target, optic, pixels, replica, veil, glass });
     alignOnFrame();
@@ -126,7 +124,7 @@ function trackSurfaces() {
   scanFrame = 0;
   const enabled = isGlass();
   if (!enabled) moving.clear();
-  const next = new Set(enabled ? document.querySelectorAll(surfaceSelector) : []);
+  const next = new Set(enabled ? catalog?.querySelectorAll('.browse-catalogue') : []);
   for (const target of surfaces) {
     if (next.has(target)) continue;
     visibility.unobserve(target);
@@ -148,16 +146,7 @@ function scheduleScan() {
 }
 
 const changes = new MutationObserver(scheduleScan);
-changes.observe(body, { attributes: true, attributeFilter: ['data-theme'] });
-if (catalog) changes.observe(catalog, { childList: true, subtree: true });
-const dialog = document.querySelector('.work-dialog');
-if (dialog) {
-  changes.observe(dialog, { attributes: true, attributeFilter: ['open'], childList: true, subtree: true });
-  dialog.addEventListener('scroll', alignOnFrame, { passive: true });
-  dialog.addEventListener('transitionrun', followMotion);
-  dialog.addEventListener('transitionend', finishMotion);
-  dialog.addEventListener('transitioncancel', finishMotion);
-}
+if (catalog) changes.observe(catalog, { childList: true });
 window.addEventListener('scroll', alignOnFrame, { passive: true });
 window.addEventListener('resize', alignOnFrame);
 window.addEventListener('pageshow', scheduleScan);
@@ -168,4 +157,5 @@ catalog?.addEventListener('transitionrun', followMotion);
 catalog?.addEventListener('transitionend', finishMotion);
 catalog?.addEventListener('transitioncancel', finishMotion);
 solidSurface.addEventListener('change', scheduleScan);
+mobile.addEventListener('change', scheduleScan);
 scheduleScan();

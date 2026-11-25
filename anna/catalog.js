@@ -1,9 +1,8 @@
-import { readCatalog, activeTheme, setTheme } from './store.js';
+import { readCatalog, heroBlocks, heroFonts } from './store.js?v=glass-only';
 
 const main = document.querySelector('#catalog-view');
 const dialog = document.querySelector('.work-dialog');
 const brand = document.querySelector('.wordmark');
-const themeButtons = [...document.querySelectorAll('[data-theme-select]')];
 const prices = new Intl.NumberFormat('ru-RU');
 const galleryPositions = new Map();
 const pagePositions = new Map();
@@ -12,6 +11,8 @@ let activeWork;
 let dialogTrigger;
 let renderVersion = 0;
 let backdropFrame = 0;
+let backdropDistance = 0;
+let backdropProgress;
 let cancelCatalogueScroll;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const revealObserver = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
@@ -79,14 +80,24 @@ function paintBackground(background) {
 function homeHero(site) {
   const hero = element('header', 'home-hero');
   const copy = element('div', 'home-hero-copy');
-  copy.append(edit(element('p', 'home-name', site.brand), 'brand'),
-    edit(element('h1', 'hero-title', site.heading), 'heading'),
-    edit(element('p', 'hero-intro', site.intro), 'intro'));
   const actions = element('div', 'home-hero-actions');
   const browse = edit(button('browse-catalogue', site.catalogueAction), 'catalogueAction');
   browse.addEventListener('click', () => scrollToCatalogue(main.querySelector('#catalogue')));
   actions.append(browse);
-  copy.append(actions);
+  const blocks = {
+    brand: edit(element('p', 'home-name', site.brand), 'brand'),
+    heading: edit(element('h1', 'hero-title', site.heading), 'heading'),
+    intro: edit(element('p', 'hero-intro', site.intro), 'intro'),
+    catalogueAction: actions,
+  };
+  for (const key of heroBlocks) {
+    const block = blocks[key];
+    const typography = site.heroLayout.typography[key];
+    const family = heroFonts[typography.font].family;
+    if (family) block.style.setProperty('--hero-font-family', family);
+    block.dataset.heroBlock = key;
+    copy.append(block);
+  }
   hero.append(copy);
   return hero;
 }
@@ -159,18 +170,24 @@ function watchCards() {
 
 function syncBackdrop() {
   backdropFrame = 0;
-  const body = document.body;
-  const catalogue = main.querySelector('#catalogue');
-  const distance = catalogue ? Math.max(1, catalogueArrival(catalogue)) : 1;
-  const progress = catalogue
-    ? Math.max(0, Math.min(1, window.scrollY / distance))
+  const progress = backdropDistance
+    ? Math.max(0, Math.min(1, window.scrollY / backdropDistance))
     : 1;
-  body.style.setProperty('--anna-photo-soften', progress.toFixed(3));
-  body.style.setProperty('--anna-cover-veil', (1 - progress).toFixed(3));
+  const rounded = progress.toFixed(3);
+  if (rounded === backdropProgress) return;
+  backdropProgress = rounded;
+  document.body.style.setProperty('--anna-photo-soften', rounded);
+  document.body.style.setProperty('--anna-cover-veil', (1 - progress).toFixed(3));
 }
 
 function scheduleBackdrop() {
   if (!backdropFrame) backdropFrame = requestAnimationFrame(syncBackdrop);
+}
+
+function measureBackdrop() {
+  const catalogue = main.querySelector('#catalogue');
+  backdropDistance = catalogue ? Math.max(1, catalogueArrival(catalogue)) : 0;
+  scheduleBackdrop();
 }
 
 function photoUrl(value) {
@@ -201,9 +218,9 @@ function price(value) {
 
 function back(href, title) {
   const anchor = link(href, 'navigation-back');
-  const arrow = element('span', '', '←');
+  const arrow = element('span', 'navigation-back-icon');
   arrow.setAttribute('aria-hidden', 'true');
-  anchor.append(arrow, document.createTextNode(title));
+  anchor.append(arrow, element('span', 'navigation-back-label', title));
   return anchor;
 }
 
@@ -323,19 +340,22 @@ function workCard(work, shortRoute, path) {
   const caption = element('div', 'work-caption');
   const heading = element('h2', 'work-title');
   const title = link(route, '', work.title);
-  let touch;
-  // Browsers can suppress the click on a title tapped immediately after a swipe.
-  title.addEventListener('pointerdown', event => {
-    if (event.pointerType !== 'touch' || !event.isPrimary || document.body.hasAttribute('data-editing')) return;
-    touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
-  });
-  title.addEventListener('pointercancel', () => { touch = null; });
-  title.addEventListener('pointerup', event => {
-    if (touch?.id !== event.pointerId) return;
-    const distance = Math.hypot(event.clientX - touch.x, event.clientY - touch.y);
-    touch = null;
-    if (distance < 10) openWork(title);
-  });
+  let tap;
+  title.addEventListener('touchstart', event => {
+    const touch = event.touches.length === 1 ? event.touches[0] : null;
+    tap = touch && { id: touch.identifier, x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  title.addEventListener('touchcancel', () => { tap = null; }, { passive: true });
+  title.addEventListener('touchend', event => {
+    const touch = Array.from(event.changedTouches).find(point => point.identifier === tap?.id);
+    const isTap = touch && Math.hypot(touch.clientX - tap.x, touch.clientY - tap.y) < 10;
+    tap = null;
+    if (!isTap || document.body.hasAttribute('data-editing')) return;
+    // Android can suppress the click on the first tap after a gallery swipe.
+    // Cancel the compatibility click before opening the dialog under the finger.
+    if (event.cancelable) event.preventDefault();
+    requestAnimationFrame(() => { if (title.isConnected) openWork(title); });
+  }, { passive: false });
   heading.append(edit(title, path + '.title'));
   caption.append(heading, edit(element('p', 'work-price', price(work.price)), path + '.price', 'price'));
   card.append(caption);
@@ -442,20 +462,6 @@ function showWork(route, update) {
     closeWork();
   };
   close.addEventListener('click', dismiss);
-  let tap;
-  close.addEventListener('touchstart', event => {
-    const started = event.touches.length === 1 ? event.touches[0] : null;
-    tap = started && { id: started.identifier, x: started.clientX, y: started.clientY };
-  }, { passive: true });
-  close.addEventListener('touchcancel', () => { tap = undefined; }, { passive: true });
-  close.addEventListener('touchend', event => {
-    const finished = [...event.changedTouches].find(touch => touch.identifier === tap?.id);
-    const smallTap = finished && Math.hypot(finished.clientX - tap.x, finished.clientY - tap.y) < 10;
-    tap = undefined;
-    if (!smallTap || !event.cancelable) return;
-    event.preventDefault();
-    dismiss();
-  }, { passive: false });
   top.append(close);
   const content = element('div', 'work-dialog-content');
   const copy = element('div', 'detail-copy');
@@ -472,17 +478,6 @@ function showWork(route, update) {
     dialog.scrollTop = 0;
     dialog.showModal();
     close.focus({ preventScroll: true });
-    // The compatibility click from the opening tap can land on the newly mounted gallery.
-    const firstTap = new AbortController();
-    const allowFocus = () => firstTap.abort();
-    const options = { capture: true, signal: firstTap.signal };
-    dialog.addEventListener('pointerdown', allowFocus, options);
-    dialog.addEventListener('keydown', allowFocus, options);
-    dialog.addEventListener('close', allowFocus, options);
-    dialog.addEventListener('click', event => {
-      if (event.pointerType === 'touch' && dialog.open && close.isConnected) close.focus({ preventScroll: true });
-      allowFocus();
-    }, options);
   }
 }
 
@@ -503,18 +498,12 @@ async function render({ navigation = false, update = false } = {}) {
       const heading = main.querySelector('.hero-title');
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
-      window.scrollTo(0, pagePositions.get(route.key) || 0);
+      window.scrollTo({ top: pagePositions.get(route.key) || 0, behavior: 'instant' });
     }
     watchCards();
-    scheduleBackdrop();
+    measureBackdrop();
   }
   showWork(route, update);
-}
-
-function applyTheme() {
-  const theme = activeTheme();
-  document.body.dataset.theme = theme;
-  themeButtons.forEach(control => control.setAttribute('aria-pressed', String(control.dataset.themeSelect === theme)));
 }
 
 function openWork(anchor) {
@@ -534,12 +523,10 @@ dialog.addEventListener('cancel', event => {
   event.preventDefault();
   closeWork();
 });
-themeButtons.forEach(control => control.addEventListener('click', () => setTheme(control.dataset.themeSelect)));
-window.addEventListener('catalog:theme', applyTheme);
-window.addEventListener('catalog:updated', () => render({ update: true }));
+window.addEventListener('catalog:updated', event => render({ update: !event.detail?.backgroundOnly }));
 window.addEventListener('hashchange', () => render({ navigation: true }));
-window.addEventListener('scroll', scheduleBackdrop, { passive: true });
-window.addEventListener('resize', scheduleBackdrop);
+window.addEventListener('scroll', () => { if (backdropDistance) scheduleBackdrop(); }, { passive: true });
+window.addEventListener('resize', measureBackdrop, { passive: true });
+document.fonts?.ready.then(measureBackdrop);
 history.scrollRestoration = 'manual';
-applyTheme();
 render();

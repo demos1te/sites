@@ -1,8 +1,9 @@
-import { readCatalog, writeCatalog, resetCatalog } from './store.js';
+import { readCatalog, writeCatalog, resetCatalog, heroBlocks, heroFonts } from './store.js?v=glass-only';
 
 const editable = '[data-edit-path][data-edit-type]';
 const actions = '[data-edit-toggle], [data-edit-reset], [data-edit-collection], [data-edit-remove]';
-const formats = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+const formats = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif'];
+const photoAccept = formats.concat('.heic', '.heif').join(',');
 const defaultColor = '#e8d7c1';
 const scopes = new Set(['text', 'price', 'media', 'background']);
 
@@ -30,6 +31,31 @@ const status = document.createElement('p');
 status.className = 'catalog-editor-status';
 status.setAttribute('role', 'status');
 document.body.append(status);
+const backgroundPicker = document.createElement('input');
+backgroundPicker.type = 'file';
+backgroundPicker.accept = photoAccept;
+backgroundPicker.hidden = true;
+backgroundPicker.dataset.backgroundPicker = '';
+document.body.append(backgroundPicker);
+const backgroundButton = document.querySelector('.background-button');
+
+backgroundPicker.addEventListener('change', async () => {
+  const file = backgroundPicker.files[0];
+  if (!file) return;
+  backgroundButton.disabled = true;
+  try {
+    updateValue('heroBackground', { color: '', image: await encodePhoto(file) });
+    announce('Фон установлен в этом браузере.');
+  } catch (failure) {
+    announce(failure?.name === 'QuotaExceededError'
+      ? 'Не хватило места для фона. Выберите фото меньшего размера.'
+      : failure?.message || 'Не удалось установить фон.');
+  } finally {
+    backgroundButton.disabled = false;
+    backgroundPicker.value = '';
+    if (document.body.hasAttribute('data-editing')) backgroundButton.focus({ preventScroll: true });
+  }
+});
 
 const form = dialog.querySelector('form');
 const fields = dialog.querySelector('[data-editor-fields]');
@@ -73,7 +99,7 @@ function updateValue(path, value) {
   const parent = keys.length ? readValue(site, keys.join('.')) : site;
   if (!Object.hasOwn(parent, name)) throw new Error('Это поле уже изменилось.');
   parent[name] = value;
-  writeCatalog(site);
+  writeCatalog(site, path === 'heroBackground');
 }
 
 function updateList(path, modify) {
@@ -103,6 +129,20 @@ function field(label, type, value, options = {}) {
   return { wrapper, control };
 }
 
+function fontField(value) {
+  const wrapper = document.createElement('label');
+  wrapper.className = 'catalog-editor-field';
+  const title = document.createElement('span');
+  title.id = 'hero-setting-font';
+  title.textContent = 'Шрифт';
+  const control = document.createElement('select');
+  control.setAttribute('aria-labelledby', title.id);
+  for (const [key, font] of Object.entries(heroFonts)) control.add(new Option(font.label, key));
+  control.value = value;
+  wrapper.append(title, control);
+  return { wrapper, control };
+}
+
 function editorSheet(title, trigger, controls, save, label = 'Сохранить', dispose) {
   disposeFields?.();
   disposeFields = dispose;
@@ -115,7 +155,7 @@ function editorSheet(title, trigger, controls, save, label = 'Сохранить
   setError();
   if (!dialog.open) dialog.showModal();
   const startingPoint = fields.querySelector('input:not([type="file"]):not([type="color"]), textarea') ?? submit;
-  startingPoint.focus();
+  startingPoint.focus({ preventScroll: true });
 }
 
 form.addEventListener('submit', async event => {
@@ -155,11 +195,11 @@ dialog.addEventListener('close', () => {
   origin = undefined;
 });
 
-function mediaFields(current, background) {
+function mediaFields(current) {
   const palette = /^#[0-9a-f]{6}$/i.test(current?.color ?? '') ? current.color : defaultColor;
-  const color = field(background ? 'Цвет фона' : 'Цвет заглушки', 'color', palette);
-  const upload = field(background ? 'Фото для фона' : 'Загрузить фото', 'file', '', {
-    accept: formats.join(',')
+  const color = field('Цвет заглушки', 'color', palette);
+  const upload = field('Загрузить фото', 'file', '', {
+    accept: photoAccept
   });
   const preview = document.createElement('div');
   preview.className = 'catalog-editor-preview';
@@ -170,8 +210,7 @@ function mediaFields(current, background) {
   const row = document.createElement('div');
   row.className = 'catalog-editor-media-actions';
 
-  const original = { color: current?.color || '', image: current?.image || '' };
-  let selected = { ...original };
+  const selected = { color: current?.color || '', image: current?.image || '' };
   let file;
   let temporaryUrl = '';
 
@@ -197,17 +236,9 @@ function mediaFields(current, background) {
     paint();
   }
 
-  function resetBackground() {
-    removePhoto();
-    selected.color = '';
-    color.control.value = palette;
-    paint();
-  }
-
   color.control.addEventListener('input', () => {
     selected.color = color.control.value;
-    if (!background) removePhoto();
-    else paint();
+    removePhoto();
   });
 
   upload.control.addEventListener('change', () => {
@@ -219,7 +250,6 @@ function mediaFields(current, background) {
   });
 
   row.append(action('Оставить только цвет', removePhoto));
-  if (background) row.append(action('Вернуть фон темы', resetBackground));
 
   paint();
   return {
@@ -232,14 +262,24 @@ function mediaFields(current, background) {
 }
 
 async function encodePhoto(file) {
-  if (!formats.includes(file.type) || file.size > 16 * 1024 * 1024) {
-    throw new Error('Выберите JPG, PNG, WebP или AVIF до 16 МБ.');
+  if ((!formats.includes(file.type) && !/\.(?:jpe?g|png|webp|avif|heic|heif)$/i.test(file.name)) || file.size > 16 * 1024 * 1024) {
+    throw new Error('Выберите фото в формате JPG, PNG, WebP, AVIF или HEIC до 16 МБ.');
   }
   let bitmap;
+  let source;
   try {
     bitmap = await createImageBitmap(file);
   } catch {
-    throw new Error('Фотография не открывается. Попробуйте другой файл.');
+    source = URL.createObjectURL(file);
+    const image = new Image();
+    image.src = source;
+    try {
+      await image.decode();
+      bitmap = image;
+    } catch {
+      URL.revokeObjectURL(source);
+      throw new Error('Фотография не открывается. Попробуйте выбрать JPG или PNG.');
+    }
   }
   try {
     const maxSide = 1100;
@@ -258,7 +298,8 @@ async function encodePhoto(file) {
       reader.readAsDataURL(blob);
     });
   } finally {
-    bitmap.close();
+    bitmap.close?.();
+    if (source) URL.revokeObjectURL(source);
   }
 }
 
@@ -311,22 +352,22 @@ function orderControls(path, kind) {
   return controls;
 }
 
-function editMedia(trigger, path, background) {
+function editMedia(trigger, path) {
   const current = readValue(readCatalog(), path);
-  const media = mediaFields(current, background);
-  if (!background && /\.photos\.\d+$/.test(path)) {
+  const media = mediaFields(current);
+  if (/\.photos\.\d+$/.test(path)) {
     const order = orderControls(path, 'кадр');
     if (order) media.nodes.push(order);
     media.nodes.push(action('Удалить этот кадр', () => removeAction(path, trigger)));
   }
-  const title = background ? 'Изменить фон сайта' : 'Изменить фотографию';
-  editorSheet(title, trigger, media.nodes, async () => {
+  editorSheet('Изменить фотографию', trigger, media.nodes, async () => {
     updateValue(path, await media.value());
   }, 'Сохранить', media.dispose);
 }
 
 function textEditor(trigger, path, isPrice) {
-  const value = readValue(readCatalog(), path);
+  const site = readCatalog();
+  const value = readValue(site, path);
   const name = segments(path).at(-1);
   const long = name === 'description' || name === 'intro';
   const label = isPrice ? 'Цена от, ₽' : long ? 'Описание' : 'Текст';
@@ -335,6 +376,10 @@ function textEditor(trigger, path, isPrice) {
     ...(isPrice ? { min: 0, max: 99999999, step: 1 } : { maxLength: long ? 1000 : 100 })
   });
   const controls = [control.wrapper];
+  const font = heroBlocks.includes(path) && trigger.closest('.home-hero-copy')
+    ? fontField(site.heroLayout.typography[path].font)
+    : null;
+  if (font) controls.push(font.wrapper);
   if (/\.works\.\d+\.title$/.test(path)) {
     const order = orderControls(path.replace(/\.title$/, ''), 'работу');
     if (order) controls.push(order);
@@ -342,14 +387,21 @@ function textEditor(trigger, path, isPrice) {
   editorSheet(isPrice ? 'Изменить цену' : 'Изменить текст', trigger, controls, () => {
     const next = isPrice ? control.control.valueAsNumber : control.control.value.trim();
     if (!isPrice && !long && !next) throw new Error('Введите текст.');
-    updateValue(path, next);
+    if (!font) {
+      updateValue(path, next);
+      return;
+    }
+    const updated = readCatalog();
+    updated.heroLayout.typography[path].font = font.control.value;
+    updated[path] = next;
+    writeCatalog(updated);
   });
 }
 
 function editCollection(trigger) {
   const { editCollection: path, editKind: kind } = trigger.dataset;
   if (kind !== 'photos' && kind !== 'works') return;
-  const media = mediaFields({ color: defaultColor, image: '' }, false);
+  const media = mediaFields({ color: defaultColor, image: '' });
   if (kind === 'photos') {
     editorSheet('Добавить кадр', trigger, media.nodes, async () => {
       const photo = await media.value();
@@ -366,7 +418,8 @@ function editCollection(trigger) {
     if (!name) throw new Error('Укажите название работы.');
     const photo = await media.value();
     updateList(path, list => list.push({
-      id: crypto.randomUUID(),
+      id: crypto.randomUUID?.() ?? Array.from(crypto.getRandomValues(new Uint8Array(16)),
+        value => value.toString(16).padStart(2, '0')).join(''),
       title: name,
       description: description.control.value.trim(),
       price: price.control.valueAsNumber,
@@ -437,7 +490,8 @@ document.addEventListener('click', event => {
     } else if (target.matches('[data-edit-collection]')) {
       editCollection(target);
     } else if (scopes.has(type)) {
-      if (type === 'media' || type === 'background') editMedia(target, path, type === 'background');
+      if (type === 'background') backgroundPicker.click();
+      else if (type === 'media') editMedia(target, path);
       else textEditor(target, path, type === 'price');
     }
   } catch (failure) {

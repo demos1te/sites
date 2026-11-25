@@ -1,7 +1,21 @@
 const catalogKey = 'anna-catalog-preview-v2';
-const themeKey = catalogKey + '-theme';
-const themes = ['journal', 'album', 'studio', 'glass'];
 const swatches = ['#E8D9CA', '#D8C3AF', '#F0E4D6', '#CDB6A0', '#E5D1BC'];
+
+export const heroBlocks = ['brand', 'heading', 'intro', 'catalogueAction'];
+export const heroFonts = {
+  theme: { label: 'По умолчанию', family: '' },
+  prata: { label: 'Prata', family: 'Prata, Georgia, serif' },
+  golos: { label: 'Golos', family: 'Golos, Arial, sans-serif' },
+  georgia: { label: 'Georgia', family: 'Georgia, serif' },
+  arial: { label: 'Arial', family: 'Arial, sans-serif' },
+};
+function readHeroLayout(layout) {
+  const typography = Object.fromEntries(heroBlocks.map(key => {
+    const font = layout?.typography?.[key]?.font;
+    return [key, { font: typeof font === 'string' && Object.hasOwn(heroFonts, font) ? font : 'theme' }];
+  }));
+  return { typography };
+}
 
 function work(index, amount, offset) {
   return {
@@ -32,6 +46,7 @@ const initial = {
   catalogueAction: 'Смотреть каталог',
   background: { color: '', image: '' },
   heroBackground: { color: '', image: '' },
+  heroLayout: readHeroLayout(),
   categories: [
     {
       id: 'wedding',
@@ -63,15 +78,16 @@ export function readCatalog() {
       stored.background = { color: '', image: '' };
       stored.catalogueTitle ??= initial.catalogueTitle;
       stored.catalogueAction ??= initial.catalogueAction;
+      stored.heroLayout = readHeroLayout(stored.heroLayout);
       return stored;
     }
   } catch {}
   return structuredClone(initial);
 }
 
-export function writeCatalog(site) {
+export function writeCatalog(site, backgroundOnly = false) {
   localStorage.setItem(catalogKey, JSON.stringify(site));
-  window.dispatchEvent(new Event('catalog:updated'));
+  window.dispatchEvent(new CustomEvent('catalog:updated', { detail: { backgroundOnly } }));
 }
 
 export function resetCatalog() {
@@ -80,23 +96,3 @@ export function resetCatalog() {
   return structuredClone(initial);
 }
 
-export function activeTheme() {
-  const linked = new URLSearchParams(location.search).get('theme');
-  if (themes.includes(linked)) return linked;
-  try {
-    const saved = localStorage.getItem(themeKey);
-    if (themes.includes(saved)) return saved;
-  } catch {}
-  return 'journal';
-}
-
-export function setTheme(theme) {
-  if (!themes.includes(theme)) return;
-  try {
-    localStorage.setItem(themeKey, theme);
-  } catch {}
-  const current = new URL(location.href);
-  current.searchParams.set('theme', theme);
-  history.replaceState(history.state, '', current);
-  window.dispatchEvent(new Event('catalog:theme'));
-}

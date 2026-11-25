@@ -10,16 +10,8 @@
     animation: view-arrival 310ms var(--ease-arrival) both;
   }
 
-  .occasion-arrow {
-    transition: transform 180ms var(--ease-feedback);
-  }
-
   .gallery-marker {
     transition: transform 235ms var(--ease-arrival);
-  }
-
-  .occasion-card:focus-visible .occasion-arrow {
-    transform: translateX(3px);
   }
 
   .gallery[data-direction="next"] .gallery-frame:not([hidden]) {
@@ -32,11 +24,6 @@
     animation: frame-arrival 235ms var(--ease-arrival) both;
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    .occasion-card:hover .occasion-arrow {
-      transform: translateX(3px);
-    }
-  }
   .occasion-media { transition: transform 190ms var(--ease-feedback); }
   .occasion-card:active .occasion-media { transform: scale(1.022); }
 
@@ -94,7 +81,7 @@
 }
 
 @keyframes view-arrival {
-  from { opacity: var(--view-arrival-start, 0); transform: translateY(6px); }
+  from { opacity: var(--view-arrival-start, 0); transform: translateY(var(--view-offset, 6px)); }
   to { opacity: 1; transform: none; }
 }
 
@@ -128,4 +115,13 @@
 @keyframes card-scroll-arrival {
   from { opacity: .72; transform: translate(var(--reveal-offset, 0), var(--reveal-rise, 9px)); }
   to { opacity: 1; transform: none; }
+}
+
+@media (pointer: coarse) {
+  #catalog-view { --view-offset: 0px; }
+  .work-dialog[open] { --view-offset: 0px; }
+  .work-dialog { transform: none; }
+  @starting-style {
+    .work-dialog[open] { transform: none; }
+  }
 }
