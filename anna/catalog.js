@@ -1,4 +1,4 @@
-import { readCatalog, heroBlocks, heroFonts } from './store.js?v=glass-only';
+import { readCatalog, heroBlocks, heroFonts } from './store.js?v=photo-picker';
 
 const main = document.querySelector('#catalog-view');
 const dialog = document.querySelector('.work-dialog');
@@ -251,7 +251,7 @@ function occasion(item, href, path) {
   return card;
 }
 
-function gallery(work, workPath, href, key, detail = false) {
+function gallery(work, workPath, href, key, onSelect) {
   const root = element('div', 'gallery');
   root.dataset.gallery = '';
   const stage = href ? link(href, 'gallery-stage') : element('div', 'gallery-stage');
@@ -269,7 +269,7 @@ function gallery(work, workPath, href, key, detail = false) {
     group.setAttribute('aria-label', 'Кадры');
     if (frames.length > 7) group.dataset.dense = '';
     group.append(element('span', 'gallery-marker'));
-    if (detail) stage.tabIndex = 0;
+    if (!href) stage.tabIndex = 0;
     frames.forEach((_, index) => {
       const dot = button('', '');
       dot.setAttribute('aria-label', 'Кадр ' + (index + 1));
@@ -292,6 +292,14 @@ function gallery(work, workPath, href, key, detail = false) {
       if (dots[offset]) dots[offset].setAttribute('aria-current', String(offset === current));
     });
     group?.style.setProperty('--dot-index', current);
+    if (group && dots[current]) {
+      const dot = dots[current];
+      if (dot.offsetLeft < group.scrollLeft) group.scrollLeft = dot.offsetLeft;
+      else if (dot.offsetLeft + dot.offsetWidth > group.scrollLeft + group.clientWidth) {
+        group.scrollLeft = dot.offsetLeft + dot.offsetWidth - group.clientWidth;
+      }
+    }
+    onSelect?.(current, photos[current]);
   }
   select(current);
 
@@ -301,6 +309,7 @@ function gallery(work, workPath, href, key, detail = false) {
     stage.addEventListener('pointerdown', event => {
       if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
       lastSwipe = -Infinity;
+      delete root.dataset.lastSwipe;
       pointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
     });
     stage.addEventListener('pointerup', event => {
@@ -310,6 +319,7 @@ function gallery(work, workPath, href, key, detail = false) {
       pointer = null;
       if (Math.abs(horizontal) < 28 || Math.abs(horizontal) < Math.abs(vertical) * 1.3) return;
       lastSwipe = performance.now();
+      root.dataset.lastSwipe = String(lastSwipe);
       const step = horizontal < 0 ? 1 : -1;
       select(current + step, step > 0 ? 'next' : 'previous');
     });
@@ -444,6 +454,7 @@ function showWork(route, update) {
     }
     activeWork = null;
     dialogTrigger = null;
+    delete dialog.dataset.workRoute;
     return;
   }
   if (dialog.open && activeWork === workRoute && !update) return;
@@ -470,9 +481,23 @@ function showWork(route, update) {
   copy.append(title, edit(element('p', 'work-price', price(work.price)), workPath + '.price', 'price'));
   if (work.description) copy.append(edit(element('p', 'detail-description', work.description), workPath + '.description'));
   else copy.append(edit(button('editor-only editor-add', 'Добавить описание'), workPath + '.description'));
-  copy.append(addControl('Добавить фото', workPath + '.photos', 'photos'));
-  content.append(gallery(work, workPath, null, workRoute, true), copy);
+  const photoPath = workPath + '.photos';
+  const photoActions = element('div', 'editor-only editor-actions work-photo-actions');
+  const primary = button('', 'Сделать фото основным');
+  const remove = button('', 'Удалить фото');
+  photoActions.append(addControl('Добавить фото', photoPath, 'photos'), primary, remove);
+  copy.append(photoActions);
+  const photos = gallery(work, workPath, null, workRoute, (index, frame) => {
+    const available = Boolean(photoUrl(frame.image));
+    primary.dataset.editPrimaryPhoto = photoPath + '.' + index;
+    primary.disabled = !available || index === 0;
+    primary.textContent = available && index === 0 ? 'Основное фото' : 'Сделать фото основным';
+    remove.dataset.editRemove = photoPath + '.' + index;
+    remove.hidden = !available;
+  });
+  content.append(photos, copy);
   dialog.replaceChildren(top, content);
+  dialog.dataset.workRoute = workRoute;
   activeWork = workRoute;
   if (!dialog.open) {
     dialog.scrollTop = 0;
@@ -523,7 +548,10 @@ dialog.addEventListener('cancel', event => {
   event.preventDefault();
   closeWork();
 });
-window.addEventListener('catalog:updated', event => render({ update: !event.detail?.backgroundOnly }));
+window.addEventListener('catalog:updated', event => {
+  if (event.detail?.photoRoute) galleryPositions.delete(event.detail.photoRoute);
+  render({ update: !event.detail?.backgroundOnly });
+});
 window.addEventListener('hashchange', () => render({ navigation: true }));
 window.addEventListener('scroll', () => { if (backdropDistance) scheduleBackdrop(); }, { passive: true });
 window.addEventListener('resize', measureBackdrop, { passive: true });

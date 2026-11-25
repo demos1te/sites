@@ -85,9 +85,9 @@ export function readCatalog() {
   return structuredClone(initial);
 }
 
-export function writeCatalog(site, backgroundOnly = false) {
+export function writeCatalog(site, details = {}) {
   localStorage.setItem(catalogKey, JSON.stringify(site));
-  window.dispatchEvent(new CustomEvent('catalog:updated', { detail: { backgroundOnly } }));
+  window.dispatchEvent(new CustomEvent('catalog:updated', { detail: details }));
 }
 
 export function resetCatalog() {

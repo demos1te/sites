@@ -128,32 +128,10 @@ body[data-editing] [data-edit-path][data-edit-type]:is(:focus-visible, :hover) {
   font: 400 16px/1.43 Golos, Arial, sans-serif;
 }
 
-.catalog-editor-field input[type="color"] {
-  cursor: pointer;
-}
-
 .catalog-editor-field textarea {
   min-height: 92px;
   overflow: auto;
   resize: none;
-}
-
-.catalog-editor-preview {
-  position: relative;
-  width: 100%;
-  height: clamp(76px, 22vw, 132px);
-  overflow: hidden;
-  border-radius: 9px;
-}
-
-.catalog-editor-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.catalog-editor-preview img[hidden] {
-  display: none;
 }
 
 .catalog-editor-error {

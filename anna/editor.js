@@ -1,7 +1,7 @@
-import { readCatalog, writeCatalog, resetCatalog, heroBlocks, heroFonts } from './store.js?v=glass-only';
+import { readCatalog, writeCatalog, resetCatalog, heroBlocks, heroFonts } from './store.js?v=photo-picker';
 
 const editable = '[data-edit-path][data-edit-type]';
-const actions = '[data-edit-toggle], [data-edit-reset], [data-edit-collection], [data-edit-remove]';
+const actions = '[data-edit-toggle], [data-edit-reset], [data-edit-collection], [data-edit-remove], [data-edit-primary-photo]';
 const formats = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/heic', 'image/heif'];
 const photoAccept = formats.concat('.heic', '.heif').join(',');
 const defaultColor = '#e8d7c1';
@@ -65,7 +65,8 @@ const error = dialog.querySelector('[role="alert"]');
 let saveChange;
 let origin;
 let statusTimer;
-let disposeFields;
+let activePicker;
+let savingPhotos = false;
 
 function setError(text = '') {
   error.textContent = text;
@@ -73,9 +74,13 @@ function setError(text = '') {
 }
 
 function announce(text) {
-  clearTimeout(statusTimer);
-  status.textContent = text;
-  statusTimer = setTimeout(() => { status.textContent = ''; }, 3800);
+  queueMicrotask(() => {
+    const host = document.querySelector('.work-dialog[open]') ?? document.body;
+    if (status.parentElement !== host) host.append(status);
+    clearTimeout(statusTimer);
+    status.textContent = text;
+    statusTimer = setTimeout(() => { status.textContent = ''; }, 3800);
+  });
 }
 
 function segments(path) {
@@ -99,15 +104,15 @@ function updateValue(path, value) {
   const parent = keys.length ? readValue(site, keys.join('.')) : site;
   if (!Object.hasOwn(parent, name)) throw new Error('Это поле уже изменилось.');
   parent[name] = value;
-  writeCatalog(site, path === 'heroBackground');
+  writeCatalog(site, { backgroundOnly: path === 'heroBackground' });
 }
 
-function updateList(path, modify) {
+function updateList(path, modify, photoRoute) {
   const site = structuredClone(readCatalog());
   const list = readValue(site, path);
   if (!Array.isArray(list)) throw new Error('Не удалось открыть список.');
-  modify(list);
-  writeCatalog(site);
+  modify(list, site);
+  writeCatalog(site, { photoRoute });
 }
 
 function action(label, run) {
@@ -143,9 +148,7 @@ function fontField(value) {
   return { wrapper, control };
 }
 
-function editorSheet(title, trigger, controls, save, label = 'Сохранить', dispose) {
-  disposeFields?.();
-  disposeFields = dispose;
+function editorSheet(title, trigger, controls, save, label = 'Сохранить') {
   heading.textContent = title;
   fields.replaceChildren(...controls);
   origin = trigger;
@@ -188,77 +191,52 @@ dialog.addEventListener('cancel', event => { if (submit.disabled) event.preventD
 
 dialog.addEventListener('close', () => {
   saveChange = undefined;
-  disposeFields?.();
-  disposeFields = undefined;
   if (origin?.isConnected) origin.focus({ preventScroll: true });
   else document.querySelector('[data-edit-toggle]')?.focus({ preventScroll: true });
   origin = undefined;
 });
 
-function mediaFields(current) {
-  const palette = /^#[0-9a-f]{6}$/i.test(current?.color ?? '') ? current.color : defaultColor;
-  const color = field('Цвет заглушки', 'color', palette);
-  const upload = field('Загрузить фото', 'file', '', {
-    accept: photoAccept
-  });
-  const preview = document.createElement('div');
-  preview.className = 'catalog-editor-preview';
-  preview.setAttribute('aria-hidden', 'true');
-  const image = document.createElement('img');
-  image.alt = '';
-  preview.append(image);
-  const row = document.createElement('div');
-  row.className = 'catalog-editor-media-actions';
+async function preparePhotos(files) {
+  const photos = [];
+  for (const file of files) photos.push({ color: '', image: await encodePhoto(file) });
+  return photos;
+}
 
-  const selected = { color: current?.color || '', image: current?.image || '' };
-  let file;
-  let temporaryUrl = '';
-
-  function releasePreview() {
-    if (temporaryUrl) URL.revokeObjectURL(temporaryUrl);
-    temporaryUrl = '';
+function pickPhotos(trigger, multiple, save, confirmation) {
+  if (savingPhotos) {
+    announce('Подождите, пока сохранятся фотографии.');
+    return;
   }
-
-  function paint() {
-    preview.style.backgroundColor = selected.color || palette;
-    const source = temporaryUrl || selected.image;
-    image.hidden = !source;
-    if (source) image.src = source;
-    else image.removeAttribute('src');
+  activePicker?.remove();
+  const picker = document.createElement('input');
+  activePicker = picker;
+  picker.type = 'file';
+  picker.accept = photoAccept;
+  picker.multiple = multiple;
+  picker.hidden = true;
+  (trigger.closest('dialog') ?? document.body).append(picker);
+  function clearPicker() {
+    picker.remove();
+    if (activePicker === picker) activePicker = undefined;
   }
-
-  function removePhoto() {
-    releasePreview();
-    selected.image = '';
-    selected.color ||= color.control.value;
-    file = undefined;
-    upload.control.value = '';
-    paint();
-  }
-
-  color.control.addEventListener('input', () => {
-    selected.color = color.control.value;
-    removePhoto();
-  });
-
-  upload.control.addEventListener('change', () => {
-    setError();
-    releasePreview();
-    file = upload.control.files[0];
-    if (file) temporaryUrl = URL.createObjectURL(file);
-    paint();
-  });
-
-  row.append(action('Оставить только цвет', removePhoto));
-
-  paint();
-  return {
-    nodes: [preview, color.wrapper, upload.wrapper, row],
-    dispose: releasePreview,
-    async value() {
-      return { color: selected.color, image: file ? await encodePhoto(file) : selected.image };
+  picker.addEventListener('cancel', clearPicker, { once: true });
+  picker.addEventListener('change', async () => {
+    const files = Array.from(picker.files);
+    clearPicker();
+    if (!files.length) return;
+    savingPhotos = true;
+    try {
+      save(await preparePhotos(files));
+      announce(confirmation);
+    } catch (failure) {
+      announce(failure?.name === 'QuotaExceededError'
+        ? 'В браузере закончилось место. Выберите меньше фотографий.'
+        : (failure?.message || 'Не удалось сохранить фотографии.'));
+    } finally {
+      savingPhotos = false;
     }
-  };
+  }, { once: true });
+  picker.click();
 }
 
 async function encodePhoto(file) {
@@ -318,7 +296,7 @@ function removeAction(path, trigger) {
       if (!list[index]) throw new Error('Эта запись уже удалена.');
       if (isPhoto && list.length === 1) list[index] = { color: defaultColor, image: '' };
       else list.splice(index, 1);
-    });
+    }, isPhoto ? trigger.closest('[data-work-route]')?.dataset.workRoute : undefined);
   }, 'Удалить');
 }
 
@@ -352,17 +330,44 @@ function orderControls(path, kind) {
   return controls;
 }
 
+function changeWorkPhotos(trigger, path, resetSelection = true) {
+  const workPath = path.slice(0, -'.photos'.length);
+  const workId = readValue(readCatalog(), workPath).id;
+  const photoRoute = resetSelection ? trigger.closest('[data-work-route]')?.dataset.workRoute : undefined;
+  return modify => updateList(path, (list, site) => {
+    if (readValue(site, workPath).id !== workId) throw new Error('Эта работа уже перемещена или удалена.');
+    modify(list);
+  }, photoRoute);
+}
+
 function editMedia(trigger, path) {
-  const current = readValue(readCatalog(), path);
-  const media = mediaFields(current);
-  if (/\.photos\.\d+$/.test(path)) {
-    const order = orderControls(path, 'кадр');
-    if (order) media.nodes.push(order);
-    media.nodes.push(action('Удалить этот кадр', () => removeAction(path, trigger)));
+  const frame = /^(.*\.photos)\.(\d+)$/.exec(path);
+  if (!frame) {
+    pickPhotos(trigger, false, ([photo]) => updateValue(path, photo), 'Фото заменено в этом браузере.');
+    return;
   }
-  editorSheet('Изменить фотографию', trigger, media.nodes, async () => {
-    updateValue(path, await media.value());
-  }, 'Сохранить', media.dispose);
+  const [, listPath, indexText] = frame;
+  const index = Number(indexText);
+  const current = readValue(readCatalog(), listPath);
+  const previousImage = current[index]?.image;
+  const change = changeWorkPhotos(trigger, listPath, current.some(photo => !photo.image));
+  pickPhotos(trigger, false, ([photo]) => change(list => {
+    if (list[index]?.image !== previousImage) throw new Error('Этот кадр уже изменился. Выберите его заново.');
+    list[index] = photo;
+    list.splice(0, list.length, ...list.filter(item => item.image));
+  }), 'Фото сохранено в этом браузере.');
+}
+
+function setPrimaryPhoto(trigger) {
+  if (trigger.disabled) return;
+  const [, path, indexText] = /^(.*\.photos)\.(\d+)$/.exec(trigger.dataset.editPrimaryPhoto);
+  const index = Number(indexText);
+  changeWorkPhotos(trigger, path)(list => {
+    if (!list[index]?.image) throw new Error('Сначала выберите фотографию.');
+    const [primary] = list.splice(index, 1);
+    list.splice(0, list.length, primary, ...list.filter(photo => photo.image));
+  });
+  announce('Основное фото обновлено.');
 }
 
 function textEditor(trigger, path, isPrice) {
@@ -401,31 +406,31 @@ function textEditor(trigger, path, isPrice) {
 function editCollection(trigger) {
   const { editCollection: path, editKind: kind } = trigger.dataset;
   if (kind !== 'photos' && kind !== 'works') return;
-  const media = mediaFields({ color: defaultColor, image: '' });
   if (kind === 'photos') {
-    editorSheet('Добавить кадр', trigger, media.nodes, async () => {
-      const photo = await media.value();
-      updateList(path, list => list.push(photo));
-    }, 'Добавить', media.dispose);
+    const change = changeWorkPhotos(trigger, path);
+    pickPhotos(trigger, true, photos => change(list => {
+      list.splice(0, list.length, ...list.filter(photo => photo.image), ...photos);
+    }), 'Фотографии добавлены.');
     return;
   }
 
   const title = field('Название', 'text', '', { required: true, maxLength: 100 });
   const price = field('Цена от, ₽', 'number', '', { required: true, min: 0, max: 99999999, step: 1 });
   const description = field('Описание', 'textarea', '', { maxLength: 1000 });
-  editorSheet('Добавить работу', trigger, [title.wrapper, price.wrapper, description.wrapper, ...media.nodes], async () => {
+  const upload = field('Фотографии', 'file', '', { accept: photoAccept, multiple: true });
+  editorSheet('Добавить работу', trigger, [title.wrapper, price.wrapper, description.wrapper, upload.wrapper], async () => {
     const name = title.control.value.trim();
     if (!name) throw new Error('Укажите название работы.');
-    const photo = await media.value();
+    const photos = await preparePhotos(upload.control.files);
     updateList(path, list => list.push({
       id: crypto.randomUUID?.() ?? Array.from(crypto.getRandomValues(new Uint8Array(16)),
         value => value.toString(16).padStart(2, '0')).join(''),
       title: name,
       description: description.control.value.trim(),
       price: price.control.valueAsNumber,
-      photos: [photo]
+      photos: photos.length ? photos : [{ color: defaultColor, image: '' }]
     }));
-  }, 'Добавить', media.dispose);
+  }, 'Добавить');
 }
 
 function toggleEditing() {
@@ -477,6 +482,10 @@ document.addEventListener('click', event => {
     return;
   }
   if (!document.body.hasAttribute('data-editing')) return;
+  if (event.detail && target.dataset.editType === 'media') {
+    const lastSwipe = target.closest('[data-gallery]')?.dataset.lastSwipe;
+    if (lastSwipe && performance.now() - Number(lastSwipe) < 420) return;
+  }
   event.preventDefault();
   event.stopImmediatePropagation();
   const { editPath: path, editType: type } = target.dataset;
@@ -487,6 +496,8 @@ document.addEventListener('click', event => {
       editorSheet('Сбросить изменения', target, [question], resetCatalog, 'Сбросить');
     } else if (target.matches('[data-edit-remove]')) {
       removeAction(target.dataset.editRemove, target);
+    } else if (target.matches('[data-edit-primary-photo]')) {
+      setPrimaryPhoto(target);
     } else if (target.matches('[data-edit-collection]')) {
       editCollection(target);
     } else if (scopes.has(type)) {
