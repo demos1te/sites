@@ -437,10 +437,51 @@ dialog::backdrop{background:#21162291;backdrop-filter:blur(6px);-webkit-backdrop
 .daisy.nails .service-price { border-bottom: 0; }
 
 .gallery-book { display: flex; width: 100%; margin-top: 10px; }
-.nails-booking { width: min(calc(100% - 24px), 550px); }
-.nails-booking .dialog-inner { padding: clamp(13px, 4vw, 26px); }
+html:has(.nails-booking) { scrollbar-gutter: stable; }
+html:has(.nails-booking[open]) { overflow: hidden; }
+.daisy .nails-booking {
+  --booking-pad: clamp(13px, 4vw, 26px);
+  --booking-height: var(--booking-viewport-height, 100dvh);
+  position: fixed;
+  inset: calc(var(--booking-viewport-top, 0px) + max(12px, (var(--booking-height) - 740px) / 2)) 0 auto;
+  width: min(calc(100% - 24px), 550px);
+  height: min(740px, calc(var(--booking-height) - 24px));
+  max-height: none;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.daisy .nails-booking[open] { animation: none; }
+.daisy .nails-booking::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.daisy .nails-booking .dialog-inner {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(155deg, #513c52f7, #2e202ff5);
+}
+.nails-booking .dialog-head {
+  align-items: center;
+  margin: 0;
+  padding: 12px var(--booking-pad);
+}
+.nails-booking .dialog-head h2 { min-width: 0; font-size: clamp(28px, 7.3vw, 42px); }
+.nails-booking .close { width: 44px; height: 44px; flex: 0 0 44px; }
+.nails-booking .booking-body {
+  min-height: 0;
+  padding: 4px var(--booking-pad) 12px;
+  overflow-y: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.booking-footer {
+  padding: 10px var(--booking-pad) 12px;
+  border-top: 1px solid #f6d9ef38;
+}
+.booking-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.booking-actions .btn { min-height: 44px; padding-inline: 5px; }
 .nails-booking .fields { grid-template-columns: 1fr; margin-top: 0; }
-.nails-booking .dialog-head h2 { min-width: 0; }
 .service-picker { display: grid; gap: 5px; }
 .service-picker-label { padding-inline: 3px; color: var(--daisy-muted); font-size: 13px; font-weight: 600; }
 .service-toggle, .service-choice {
@@ -475,12 +516,11 @@ dialog::backdrop{background:#21162291;backdrop-filter:blur(6px);-webkit-backdrop
   font-weight: 600;
 }
 .service-choice[aria-selected="true"] .service-option-price { color: inherit; }
-.service-choice[aria-selected="true"] > .daisy-optic { opacity: .18; }
 .service-choice[aria-selected="true"]:focus-visible { outline-color: #60334d; }
 .nails-booking .personal-entry { margin-top: 9px; }
 .nails-booking .personal-entry textarea { min-height: 80px; resize: none; font-size: 16px; }
 .nails-booking .booking-note { margin: 12px 0 7px; color: var(--daisy-muted); font-size: 13px; }
-.nails-booking .booking-error { margin-top: 9px; color: #ffcfde; font-size: .875rem; }
+.nails-booking .booking-error { margin-bottom: 7px; color: #ffcfde; font-size: .875rem; }
 .nails-booking .appointment-example {
   display: grid;
   grid-template-columns: 44px 1fr;
@@ -504,7 +544,6 @@ dialog::backdrop{background:#21162291;backdrop-filter:blur(6px);-webkit-backdrop
   }
   .daisy.nails #items .section-head { flex-direction: row; }
   .nails-booking .dialog-head { gap: 8px; }
-  .nails-booking .dialog-head h2 { font-size: clamp(27px, 7.9vw, 44px); }
 }
 
 </style>
@@ -703,11 +742,12 @@ if (cover && hero && next) {
   const calendarControls = webkit
     ? ['.calendar-day[aria-pressed=true]', '.slot-button[aria-pressed=true]']
     : ['.calendar-day', '.slot-button'];
-  const targets = [
+  const targetClasses = [
     '.header .bar', '.btn', '.chip', '.product-open', '.work-media', '.wide-panel',
     '.dialog-inner', '.close', '.fields label', '.appointment-step', '.calendar-panel',
     ...calendarControls, '[data-daisy-glass]',
   ].join(',');
+  const targets = `:is(${targetClasses}):not([data-daisy-static], [data-daisy-static] *)`;
   const observed = new Set();
   const lenses = new Map();
   const couldUseOptics = 'IntersectionObserver' in window && 'ResizeObserver' in window;
@@ -812,7 +852,9 @@ if (cover && hero && next) {
   setSource();
   cover.addEventListener('load', setSource);
   measure();
-  window.addEventListener('scroll', queuePaint, {passive:true, capture:true});
+  window.addEventListener('scroll', event => {
+    if (!event.target.closest?.('[data-daisy-static]')) queuePaint();
+  }, {passive:true, capture:true});
   window.addEventListener('resize', measure, {passive:true});
 
   if (couldUseOptics) {
@@ -844,11 +886,13 @@ if (cover && hero && next) {
     resize.observe(hero);
     if (header) resize.observe(header);
     new MutationObserver(records => {
-      const structural = records.some(r =>
-        r.type === 'attributes'
+      const structural = records.some(r => {
+        if (r.target.closest?.('[data-daisy-static]')) return false;
+        return r.type === 'attributes'
           ? webkit && r.target.matches('.calendar-day, .slot-button')
           : [...r.addedNodes, ...r.removedNodes].some(node =>
-            node instanceof Element && !node.matches('.daisy-optic') && !node.closest('.daisy-optic')));
+            node instanceof Element && !node.matches('.daisy-optic') && !node.closest('.daisy-optic'));
+      });
       if (structural && !scanFrame) scanFrame = requestAnimationFrame(scan);
     }).observe(body, {childList:true, subtree:true, attributes:webkit, ...(webkit ? {attributeFilter:['aria-pressed']} : {})});
     reduction.addEventListener('change', scan);
@@ -891,7 +935,6 @@ const serviceChoices = [...services].map(([name, price]) => {
   choice.type = 'button';
   choice.className = 'service-choice';
   choice.dataset.service = name;
-  choice.setAttribute('data-daisy-glass', '');
   choice.setAttribute('role', 'option');
   choice.setAttribute('aria-selected', 'false');
   choice.tabIndex = -1;
@@ -908,6 +951,24 @@ const serviceChoices = [...services].map(([name, price]) => {
 });
 serviceOptions.append(...serviceChoices);
 
+function focusControl(control, reveal = false) {
+  control.focus({ preventScroll: true });
+  if (!reveal) return;
+  const frame = form.getBoundingClientRect();
+  const field = control.getBoundingClientRect();
+  if (field.top < frame.top + 6) form.scrollTop += field.top - frame.top - 6;
+  else if (field.bottom > frame.bottom - 6) form.scrollTop += field.bottom - frame.bottom + 6;
+}
+
+const viewport = window.visualViewport;
+function sizeBooking() {
+  if (!booking.open || !viewport) return;
+  booking.style.setProperty('--booking-viewport-height', `${viewport.height}px`);
+  booking.style.setProperty('--booking-viewport-top', `${viewport.offsetTop}px`);
+}
+viewport?.addEventListener('resize', sizeBooking, { passive: true });
+viewport?.addEventListener('scroll', sizeBooking, { passive: true });
+
 function selectService(name) {
   serviceInput.value = name;
   serviceValue.textContent = name || 'Выберите услугу';
@@ -923,25 +984,25 @@ function selectService(name) {
   error.hidden = true;
 }
 
-function setServiceOpen(open, { returnFocus = false, fromEnd = false } = {}) {
+function setServiceOpen(open, { returnFocus = false, fromEnd = false, reveal = false } = {}) {
   serviceOptions.hidden = !open;
   serviceToggle.setAttribute('aria-expanded', String(open));
   if (open) {
     const selected = serviceChoices.find((choice) => choice.dataset.service === serviceInput.value);
-    (selected || serviceChoices.at(fromEnd ? -1 : 0)).focus();
+    focusControl(selected || serviceChoices.at(fromEnd ? -1 : 0), reveal);
   } else if (returnFocus) {
-    serviceToggle.focus({ preventScroll: true });
+    focusControl(serviceToggle, reveal);
   }
 }
 
-serviceToggle.addEventListener('click', () => setServiceOpen(serviceOptions.hidden));
+serviceToggle.addEventListener('click', event => setServiceOpen(serviceOptions.hidden, { reveal: event.detail === 0 && !event.pointerType }));
 serviceOptions.addEventListener('click', (event) => {
   const choice = event.target.closest('[data-service]');
   if (!choice) return;
   selectService(choice.dataset.service);
   const focusDescription = choice.dataset.service === personalService && event.detail === 0 && !event.pointerType;
   setServiceOpen(false, { returnFocus: !focusDescription });
-  if (focusDescription) description.focus();
+  if (focusDescription) focusControl(description, true);
 });
 servicePicker.addEventListener('focusout', (event) => {
   if (!serviceOptions.hidden && !servicePicker.contains(event.relatedTarget)) setServiceOpen(false);
@@ -956,7 +1017,7 @@ servicePicker.addEventListener('keydown', (event) => {
   if (serviceOptions.hidden) {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
     event.preventDefault();
-    setServiceOpen(true, { fromEnd: event.key === 'ArrowUp' });
+    setServiceOpen(true, { fromEnd: event.key === 'ArrowUp', reveal: true });
     return;
   }
   const index = serviceChoices.indexOf(document.activeElement);
@@ -969,7 +1030,7 @@ servicePicker.addEventListener('keydown', (event) => {
     default: return;
   }
   event.preventDefault();
-  serviceChoices[next].focus();
+  focusControl(serviceChoices[next], true);
 });
 description.addEventListener('input', () => { error.hidden = true; });
 
@@ -1005,7 +1066,6 @@ function openBooking(trigger, { service = '', example } = {}) {
   setServiceOpen(false);
   selectService(service);
   calendar.reset();
-  booking.scrollTop = 0;
   error.hidden = true;
 
   examplePanel.hidden = !example;
@@ -1015,6 +1075,8 @@ function openBooking(trigger, { service = '', example } = {}) {
   }
 
   booking.showModal();
+  sizeBooking();
+  form.scrollTop = 0;
 }
 
 for (const trigger of document.querySelectorAll('[data-appointment]')) {
@@ -1052,13 +1114,13 @@ form.addEventListener('submit', (event) => {
   if (!service) {
     error.textContent = 'Выберите услугу.';
     error.hidden = false;
-    setServiceOpen(true);
+    setServiceOpen(true, { reveal: true });
     return;
   }
   if (service === personalService && !personalDescription) {
     error.textContent = 'Опишите свой вариант.';
     error.hidden = false;
-    description.focus();
+    focusControl(description, true);
     return;
   }
   const { day, time } = calendar.value;
@@ -1067,7 +1129,7 @@ form.addEventListener('submit', (event) => {
     error.hidden = false;
     const next = day ? calendarRoot.querySelector('.slot-button:not(:disabled)')
       : calendarRoot.querySelector('.calendar-day:not(:disabled)') ?? calendarRoot.querySelector('[data-shift="1"]:not(:disabled)');
-    next?.focus();
+    if (next) focusControl(next, true);
     return;
   }
 
@@ -1080,7 +1142,9 @@ form.addEventListener('submit', (event) => {
   if (personalDescription) lines.push(`Описание: ${personalDescription}`);
   if (selectedExample) lines.push(`Хочу как на фото из галереи: «${selectedExample.title}».`);
   lines.push('Подтвердите, пожалуйста, время.');
-  const url = new URL('https://t.me/Pehimenko');
+  const destination = event.submitter?.value === 'whatsapp'
+    ? 'https://wa.me/79502929156' : 'https://t.me/Pehimenko';
+  const url = new URL(destination);
   url.searchParams.set('text', lines.join('\n'));
   window.open(url.href, '_blank', 'noopener,noreferrer');
 });
@@ -1178,7 +1242,6 @@ form.addEventListener('submit', (event) => {
   <footer class="foot wrap">
     <div class="foot-group"><strong>Маникюр на Чуркине</strong><span>Владивосток</span></div>
     <div class="foot-group"><a href="https://t.me/Pehimenko" target="_blank" rel="noopener">Telegram</a></div>
-    <div class="foot-group"><a href="https://t.me/model_vl_vl/49733" target="_blank" rel="noopener">Объявление и прайс</a></div>
   </footer>
   
       <dialog class="gallery-dialog" aria-labelledby="dialog-title">
@@ -1193,17 +1256,17 @@ form.addEventListener('submit', (event) => {
           <button class="btn primary gallery-book" type="button" id="book-from-photo">Хочу так же</button>
         </div>
       </dialog>
-      <dialog class="nails-booking" aria-labelledby="appointment-title">
+      <dialog class="nails-booking" data-daisy-static aria-labelledby="appointment-title">
         <div class="dialog-inner">
-          <div class="dialog-head"><h2 id="appointment-title">Запись на маникюр</h2><button class="close" type="button" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-          <form>
-            <div class="appointment-example" id="appointment-example" data-daisy-glass hidden>
+          <div class="dialog-head"><h2 id="appointment-title">Запись на маникюр</h2><button class="close" type="button" aria-label="Закрыть" autofocus><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+          <form class="booking-body" id="nails-booking-form">
+            <div class="appointment-example" id="appointment-example" hidden>
               <img alt="">
               <div><span>Пример из галереи</span><strong></strong></div>
             </div>
             <div class="service-picker" id="service-picker">
               <span class="service-picker-label" id="service-picker-label">Услуга</span>
-              <button class="service-toggle" id="service-toggle" type="button" data-daisy-glass aria-haspopup="listbox" aria-expanded="false" aria-controls="service-options" aria-labelledby="service-picker-label service-value service-selected-price">
+              <button class="service-toggle" id="service-toggle" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="service-options" aria-labelledby="service-picker-label service-value service-selected-price">
                 <span id="service-value">Выберите услугу</span>
                 <span class="service-option-price" id="service-selected-price" hidden></span>
                 <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 5 5 5-5"/></svg>
@@ -1216,9 +1279,14 @@ form.addEventListener('submit', (event) => {
             </div>
             <p class="booking-note" id="booking-note">Демо-расписание. Время подтвердит мастер.</p>
             <div class="demo-calendar calendar-panel" id="nails-calendar" role="group" aria-label="Календарь записи" aria-describedby="booking-note"></div>
-            <p class="booking-error" id="booking-error" role="status" hidden></p>
-            <button class="btn primary submit" type="submit">Записаться в Telegram</button>
           </form>
+          <div class="booking-footer">
+            <p class="booking-error" id="booking-error" role="status" hidden></p>
+            <div class="booking-actions">
+              <button class="btn primary" type="submit" form="nails-booking-form" name="channel" value="telegram" aria-label="Записаться в Telegram">Telegram</button>
+              <button class="btn" type="submit" form="nails-booking-form" name="channel" value="whatsapp" aria-label="Записаться в WhatsApp">WhatsApp</button>
+            </div>
+          </div>
         </div>
       </dialog>
 
