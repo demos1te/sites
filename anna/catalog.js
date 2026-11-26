@@ -251,10 +251,70 @@ function occasion(item, href, path) {
   return card;
 }
 
-function gallery(work, workPath, href, key, onSelect) {
+function photoZoom(stage, control) {
+  let drag;
+  let ignoreClick = false;
+  const zoomed = () => stage.hasAttribute('data-zoomed');
+
+  function setZoom(enabled) {
+    stage.toggleAttribute('data-zoomed', enabled);
+    control.setAttribute('aria-pressed', String(enabled));
+    control.textContent = enabled ? 'Вернуть масштаб' : 'Увеличить фото';
+    stage.scrollTo({
+      left: enabled ? (stage.scrollWidth - stage.clientWidth) / 2 : 0,
+      top: enabled ? (stage.scrollHeight - stage.clientHeight) / 2 : 0,
+      behavior: 'instant',
+    });
+  }
+
+  control.addEventListener('click', () => setZoom(!zoomed()));
+  stage.addEventListener('click', event => {
+    if (ignoreClick) {
+      ignoreClick = false;
+      return;
+    }
+    if (!control.hidden && event.target.matches('img') && !document.body.hasAttribute('data-editing')) {
+      setZoom(!zoomed());
+    }
+  });
+  stage.addEventListener('pointerdown', event => {
+    ignoreClick = false;
+    if (!zoomed() || event.pointerType !== 'mouse' || event.button !== 0) return;
+    drag = { id: event.pointerId, x: event.clientX + stage.scrollLeft, y: event.clientY + stage.scrollTop };
+  });
+  stage.addEventListener('pointermove', event => {
+    if (drag?.id !== event.pointerId) return;
+    const left = drag.x - event.clientX;
+    const top = drag.y - event.clientY;
+    if (Math.abs(left - stage.scrollLeft) + Math.abs(top - stage.scrollTop) < 3 && !ignoreClick) return;
+    if (!ignoreClick) stage.setPointerCapture(event.pointerId);
+    ignoreClick = true;
+    stage.scrollTo({ left, top, behavior: 'instant' });
+  });
+  for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    stage.addEventListener(event, () => { drag = null; });
+  }
+  stage.addEventListener('keydown', event => {
+    if (!zoomed()) return;
+    const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const direction = directions[event.key];
+    if (!direction) return;
+    event.preventDefault();
+    event.stopPropagation();
+    stage.scrollBy({ left: direction[0] * 45, top: direction[1] * 45, behavior: 'instant' });
+  });
+  return photo => {
+    if (zoomed()) setZoom(false);
+    control.hidden = !photoUrl(photo.image);
+    stage.tabIndex = control.hidden && !stage.parentElement.querySelector('.gallery-dots') ? -1 : 0;
+  };
+}
+
+function gallery(work, workPath, href, key, { onSelect, zoomControl } = {}) {
   const root = element('div', 'gallery');
   root.dataset.gallery = '';
   const stage = href ? link(href, 'gallery-stage') : element('div', 'gallery-stage');
+  const syncZoom = zoomControl && photoZoom(stage, zoomControl);
   stage.setAttribute('aria-label', href ? 'Открыть карточку «' + work.title + '»' : 'Фотографии работы');
   const photos = work.photos.length ? work.photos : [{}];
   const frames = photos.map((photo, index) => media(photo, 'gallery-frame', workPath + '.photos.' + index));
@@ -300,6 +360,7 @@ function gallery(work, workPath, href, key, onSelect) {
       }
     }
     onSelect?.(current, photos[current]);
+    syncZoom?.(photos[current]);
   }
   select(current);
 
@@ -307,12 +368,14 @@ function gallery(work, workPath, href, key, onSelect) {
     let pointer;
     let lastSwipe = -Infinity;
     stage.addEventListener('pointerdown', event => {
+      if (stage.hasAttribute('data-zoomed')) return;
       if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
       lastSwipe = -Infinity;
       delete root.dataset.lastSwipe;
       pointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
     });
     stage.addEventListener('pointerup', event => {
+      if (stage.hasAttribute('data-zoomed')) return;
       if (pointer?.id !== event.pointerId) return;
       const horizontal = event.clientX - pointer.x;
       const vertical = event.clientY - pointer.y;
@@ -461,6 +524,8 @@ function showWork(route, update) {
   if (!dialog.open) dialogTrigger ??= document.activeElement;
   const { work, workPath } = route;
   const top = element('div', 'dialog-top');
+  const zoom = button('dialog-zoom', 'Увеличить фото');
+  zoom.setAttribute('aria-pressed', 'false');
   const close = button('dialog-close', '');
   close.setAttribute('aria-label', 'Закрыть');
   close.autofocus = true;
@@ -473,7 +538,7 @@ function showWork(route, update) {
     closeWork();
   };
   close.addEventListener('click', dismiss);
-  top.append(close);
+  top.append(zoom, close);
   const content = element('div', 'work-dialog-content');
   const copy = element('div', 'detail-copy');
   const title = edit(element('h2', 'detail-title', work.title), workPath + '.title');
@@ -487,13 +552,16 @@ function showWork(route, update) {
   const remove = button('', 'Удалить фото');
   photoActions.append(addControl('Добавить фото', photoPath, 'photos'), primary, remove);
   copy.append(photoActions);
-  const photos = gallery(work, workPath, null, workRoute, (index, frame) => {
-    const available = Boolean(photoUrl(frame.image));
-    primary.dataset.editPrimaryPhoto = photoPath + '.' + index;
-    primary.disabled = !available || index === 0;
-    primary.textContent = available && index === 0 ? 'Основное фото' : 'Сделать фото основным';
-    remove.dataset.editRemove = photoPath + '.' + index;
-    remove.hidden = !available;
+  const photos = gallery(work, workPath, null, workRoute, {
+    zoomControl: zoom,
+    onSelect(index, frame) {
+      const available = Boolean(photoUrl(frame.image));
+      primary.dataset.editPrimaryPhoto = photoPath + '.' + index;
+      primary.disabled = !available || index === 0;
+      primary.textContent = available && index === 0 ? 'Основное фото' : 'Сделать фото основным';
+      remove.dataset.editRemove = photoPath + '.' + index;
+      remove.hidden = !available;
+    },
   });
   content.append(photos, copy);
   dialog.replaceChildren(top, content);

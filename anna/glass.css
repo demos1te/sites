@@ -149,11 +149,14 @@ body[data-theme="glass"] .collection-hero .hero-intro { color: #523644; }
 [data-theme="glass"] .work-dialog .gallery-stage {
   border-radius: calc(var(--corner) - 6px);
 }
-[data-theme="glass"] .detail-copy { margin: 6px 0 0; }
 [data-theme="glass"] .dialog-close {
   --glass-sheet: linear-gradient(145deg, #fffaf1ab, #ead1c673);
   border-radius: 50%;
   padding: 0;
+}
+[data-theme="glass"] .dialog-zoom {
+  background: var(--catalogue-card-sheet);
+  color: var(--ink);
 }
 @media (pointer: coarse) {
   [data-theme="glass"] .work-dialog { background: #ead7e7eb; backdrop-filter: none; }
@@ -172,7 +175,7 @@ body[data-theme="glass"] .collection-hero .hero-intro { color: #523644; }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
   body[data-theme="glass"] .view:not(.view--home) .collection-hero { background: #fff5ee; }
-  body[data-theme="glass"] :is(.browse-catalogue, .occasion-card, .work-card, .site-header, .work-dialog, .detail-copy, .dialog-close, .catalogue-head) {
+  body[data-theme="glass"] :is(.browse-catalogue, .occasion-card, .work-card, .site-header, .work-dialog, .detail-copy, .dialog-close, .dialog-zoom, .catalogue-head) {
     --glass-sheet: #fff5ee;
     background: #fff5ee;
   }
