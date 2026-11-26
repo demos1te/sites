@@ -249,7 +249,7 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; }
   padding-inline: 9px;
   pointer-events: none;
 }
-.dialog-close, .dialog-zoom {
+.dialog-close {
   position: relative;
   inset-block-start: 9px;
   display: grid;
@@ -265,46 +265,37 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; }
   pointer-events: auto;
 }
 .dialog-close { flex: 0 0 46px; width: 46px; height: 46px; padding: 0; }
-.dialog-zoom { margin-inline-end: auto; align-self: start; padding-inline: 13px; font-size: 13px; }
 .dialog-close > span:not(.glass-optic) { font-size: 26px; line-height: 1; }
 .work-dialog-content {
   display: grid;
   grid-template-rows: auto minmax(min-content, 1fr);
-  min-height: 100%;
   gap: 6px;
 }
 .work-dialog .gallery-stage {
-  height: clamp(210px, 59dvh, 650px);
+  height: max(180px, 76dvh);
   aspect-ratio: auto;
   border-radius: 0;
 }
 .work-dialog .gallery-stage img { object-fit: contain; }
-body:not([data-editing]) .work-dialog .gallery-stage img { cursor: zoom-in; }
-.work-dialog .gallery-stage[data-zoomed] {
-  overflow: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
-  touch-action: pan-x pan-y;
+body:not([data-editing]) .work-dialog .gallery-stage[data-zoomable] {
+  touch-action: none;
+  cursor: zoom-in;
 }
-body:not([data-editing]) .work-dialog .gallery-stage[data-zoomed] img { cursor: grab; }
-body:not([data-editing]) .work-dialog .gallery-stage[data-zoomed] img:active { cursor: grabbing; }
-.work-dialog .gallery-stage[data-zoomed] .gallery-frame[data-active] {
-  inset: 0 auto auto 0;
-  inline-size: 200%;
-  block-size: 200%;
-}
-.detail-copy { min-width: 0; padding: clamp(17px, 4vw, 38px); }
+body:not([data-editing]) .work-dialog .gallery-stage[data-zoomed] { cursor: grab; }
+body:not([data-editing]) .work-dialog .gallery-stage[data-zoomed]:active { cursor: grabbing; }
+.detail-copy { min-width: 0; padding: 11px 15px; }
 @media (min-width: 840px) {
   .work-dialog-content {
     height: 100%;
-    grid-template-columns: minmax(0, 1fr) minmax(245px, 32%);
+    grid-template-columns: minmax(0, 1fr) minmax(205px, 23%);
     grid-template-rows: minmax(0, 1fr);
   }
   .work-dialog .gallery-stage { height: 100%; }
-  .work-dialog .detail-copy { overflow: auto; padding-top: max(64px, 5vw); }
+  .work-dialog .detail-copy { overflow: auto; padding: 63px 20px 18px; }
 }
-.detail-title { font: 400 clamp(25px, 5.5vw, 49px)/1.17 var(--display); letter-spacing: -.035em; overflow-wrap: anywhere; }
-.detail-description { margin-top: 16px; line-height: 1.6; white-space: pre-wrap; color: var(--muted); overflow-wrap: anywhere; }
+.detail-title { font: 400 clamp(23px, 4vw, 35px)/1.15 var(--display); letter-spacing: -.035em; overflow-wrap: anywhere; }
+.detail-copy .work-price { margin-top: 5px; font-size: 13px; }
+.detail-description { margin-top: 6px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; color: var(--muted); overflow-wrap: anywhere; }
 .section-empty { color: var(--muted); margin-top: 13px; }
 .editor-only { display: none; }
 body[data-editing] .editor-only { display: inline-flex; }

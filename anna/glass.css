@@ -154,10 +154,6 @@ body[data-theme="glass"] .collection-hero .hero-intro { color: #523644; }
   border-radius: 50%;
   padding: 0;
 }
-[data-theme="glass"] .dialog-zoom {
-  background: var(--catalogue-card-sheet);
-  color: var(--ink);
-}
 @media (pointer: coarse) {
   [data-theme="glass"] .work-dialog { background: #ead7e7eb; backdrop-filter: none; }
 }
@@ -175,7 +171,7 @@ body[data-theme="glass"] .collection-hero .hero-intro { color: #523644; }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
   body[data-theme="glass"] .view:not(.view--home) .collection-hero { background: #fff5ee; }
-  body[data-theme="glass"] :is(.browse-catalogue, .occasion-card, .work-card, .site-header, .work-dialog, .detail-copy, .dialog-close, .dialog-zoom, .catalogue-head) {
+  body[data-theme="glass"] :is(.browse-catalogue, .occasion-card, .work-card, .site-header, .work-dialog, .detail-copy, .dialog-close, .catalogue-head) {
     --glass-sheet: #fff5ee;
     background: #fff5ee;
   }
